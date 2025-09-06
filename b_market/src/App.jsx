@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useState } from "react";
 
 // Pages
+import LandingPage from "./Frontend/Pages/LandingPage";
 import LoginPage from "./Frontend/Pages/LoginPage";
 import SignUpPage from "./Frontend/Pages/SignUpPage";
 import DashboardPage from "./Frontend/Pages/DashboardPage";
@@ -16,7 +17,7 @@ import AccountingPage from "./Frontend/Pages/AccountingPage";
 
 // Example fake auth state (replace with real auth later)
 const fakeUser = {
-  role: null, // "customer", "csr", "teamlead", "procurement", "warehouse", "accounting", "admin"
+  role: null, // "csr", "teamlead", "procurement", "warehouse", "accounting"
 };
 
 function ProtectedRoute({ children, allowedRoles }) {
@@ -35,22 +36,21 @@ function App() {
   return (
     <Routes>
       {/* Public routes */}
+      <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage setUser={setUser} />} />
       <Route path="/signup" element={<SignUpPage setUser={setUser} />} />
 
-      {/* Shared routes */}
+      {/* Shared routes for all roles */}
       <Route
         path="/dashboard"
         element={
           <ProtectedRoute
             allowedRoles={[
-              "customer",
               "csr",
               "teamlead",
               "procurement",
               "warehouse",
               "accounting",
-              "admin",
             ]}
           >
             <DashboardPage />
@@ -62,13 +62,11 @@ function App() {
         element={
           <ProtectedRoute
             allowedRoles={[
-              "customer",
               "csr",
               "teamlead",
               "procurement",
               "warehouse",
               "accounting",
-              "admin",
             ]}
           >
             <ProductListPage />
@@ -80,13 +78,11 @@ function App() {
         element={
           <ProtectedRoute
             allowedRoles={[
-              "customer",
               "csr",
               "teamlead",
               "procurement",
               "warehouse",
               "accounting",
-              "admin",
             ]}
           >
             <OrdersPage />
@@ -135,17 +131,20 @@ function App() {
           </ProtectedRoute>
         }
       />
+
+      {/* Logout route */}
       <Route
-        path="/admin"
+        path="/logout"
         element={
-          <ProtectedRoute allowedRoles={["admin"]}>
-            <h1>Admin Panel (Reports / User Management)</h1>
-          </ProtectedRoute>
+          <div>
+            <h1>Logging out...</h1>
+            <Navigate to="/" replace />
+          </div>
         }
       />
 
       {/* Default redirect */}
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

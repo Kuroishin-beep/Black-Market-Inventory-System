@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import Sidebar from "../components/Sidebar";
-import "./Procurement.css";
+import Sidebar from "../Pages/Sidebar";
+import "../CSS/Login.css";
 
-const Procurement = ({ userRole = "procurement" }) => {
+const ProcurementPage = ({ userRole = "procurement" }) => {
   const [formData, setFormData] = useState({
     productName: "",
     distributor: "",
@@ -17,7 +17,7 @@ const Procurement = ({ userRole = "procurement" }) => {
       distributor: "Tech Distributors Inc",
       price: "$599.75",
       quantity: "12,345",
-      status: "Pending",
+      status: "Approved",
       dateAdded: "2025-09-01",
     },
     {
@@ -26,7 +26,7 @@ const Procurement = ({ userRole = "procurement" }) => {
       distributor: "Global Tech Supply",
       price: "$599.75",
       quantity: "23,456",
-      status: "Approved",
+      status: "Pending",
       dateAdded: "2025-09-02",
     },
     {
@@ -76,6 +76,8 @@ const Procurement = ({ userRole = "procurement" }) => {
         quantity: "",
       });
       setShowForm(false);
+
+      console.log("New product added to inventory:", newProduct);
     }
   };
 
@@ -97,7 +99,7 @@ const Procurement = ({ userRole = "procurement" }) => {
       <Sidebar userRole={userRole} />
       <main className="procurement-main">
         <header className="procurement-header">
-          <h1>Procurement</h1>
+          <h1>Procurement - Add Products to Inventory</h1>
           <div className="header-actions">
             <button
               className="add-product-btn"
@@ -122,7 +124,7 @@ const Procurement = ({ userRole = "procurement" }) => {
           <div className="add-product-form">
             <div className="form-card">
               <div className="form-header">
-                <h2>Add New Product</h2>
+                <h2>Add New Product to Inventory</h2>
                 <button
                   className="close-btn"
                   onClick={() => setShowForm(false)}
@@ -196,7 +198,7 @@ const Procurement = ({ userRole = "procurement" }) => {
                     Cancel
                   </button>
                   <button type="submit" className="submit-btn">
-                    Add Product
+                    Add to Inventory
                   </button>
                 </div>
               </form>
@@ -242,4 +244,4 @@ const Procurement = ({ userRole = "procurement" }) => {
   );
 };
 
-export default Procurement;
+export default ProcurementPage;

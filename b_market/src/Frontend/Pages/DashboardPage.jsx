@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import Sidebar from "../components/Sidebar";
-import "./Dashboard.css";
-import "./shared.css";
+import Sidebar from "../Pages/Sidebar";
+import "../CSS/Dashboard.css";
+import "../CSS/Shared.css";
 
-const Dashboard = () => {
-  const [userRole, setUserRole] = useState("admin"); // This should come from auth context
+const DashboardPage = () => {
+  const [userRole, setUserRole] = useState("csr"); // Default role, should come from auth context
   const [dashboardData, setDashboardData] = useState({
     totalOrders: 6543,
     totalProducts: 7654,
@@ -29,28 +29,28 @@ const Dashboard = () => {
     },
     {
       name: "Acer Predator Helios 18P AI",
-      id: "#12345",
+      id: "#12346",
       price: "$599.75",
       sales: "$76,543.21",
       status: "In Stock",
     },
     {
       name: "Asus ROG Zephyrus G16",
-      id: "#67890",
+      id: "#67891",
       price: "$599.75",
       sales: "$76,543.21",
       status: "Out of Stock",
     },
     {
       name: "Acer Predator Helios Neo 16",
-      id: "#12345",
+      id: "#12347",
       price: "$599.75",
       sales: "$76,543.21",
       status: "In Stock",
     },
     {
       name: "Dell XPS 13",
-      id: "#67890",
+      id: "#67892",
       price: "$599.75",
       sales: "$76,543.21",
       status: "In Stock",
@@ -178,4 +178,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default DashboardPage;

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import Sidebar from "../components/Sidebar";
-import "./TeamLead.css";
+import Sidebar from "../Pages/Sidebar";
+import "../CSS/TeamLeader.css";
 
-const TeamLead = ({ userRole = "teamlead" }) => {
+const TeamLeaderPage = ({ userRole = "teamlead" }) => {
   const [orders, setOrders] = useState([
     {
       id: "12345",
@@ -21,7 +21,7 @@ const TeamLead = ({ userRole = "teamlead" }) => {
       status: "Pending Approval",
     },
     {
-      id: "12345",
+      id: "12346",
       itemInfo: "Acer Predator Helios 18P AI",
       customer: "GHI Retail",
       item: "1,234",
@@ -29,7 +29,7 @@ const TeamLead = ({ userRole = "teamlead" }) => {
       status: "Approved",
     },
     {
-      id: "67890",
+      id: "67891",
       itemInfo: "Asus ROG Zephyrus G16",
       customer: "JKL Store",
       item: "45,678",
@@ -37,7 +37,7 @@ const TeamLead = ({ userRole = "teamlead" }) => {
       status: "Pending Approval",
     },
     {
-      id: "12345",
+      id: "12347",
       itemInfo: "Acer Predator Helios Neo 16",
       customer: "MNO Merchandise",
       item: "678",
@@ -45,7 +45,7 @@ const TeamLead = ({ userRole = "teamlead" }) => {
       status: "Pending Approval",
     },
     {
-      id: "67890",
+      id: "67892",
       itemInfo: "Dell XPS 13",
       customer: "PQR Retail",
       item: "13,567",
@@ -53,7 +53,7 @@ const TeamLead = ({ userRole = "teamlead" }) => {
       status: "Denied",
     },
     {
-      id: "12345",
+      id: "12348",
       itemInfo: "Lenovo ThinkBook Plus Gen 6",
       customer: "STU Merchandise",
       item: "12,345",
@@ -61,7 +61,7 @@ const TeamLead = ({ userRole = "teamlead" }) => {
       status: "Pending Approval",
     },
     {
-      id: "67890",
+      id: "67893",
       itemInfo: "Acer Chromebook Plus Spin 514",
       customer: "VWX Store",
       item: "23,456",
@@ -69,7 +69,7 @@ const TeamLead = ({ userRole = "teamlead" }) => {
       status: "Approved",
     },
     {
-      id: "12345",
+      id: "12349",
       itemInfo: "Acer Predator Helios 18P AI",
       customer: "YZA Store",
       item: "1,234",
@@ -77,7 +77,7 @@ const TeamLead = ({ userRole = "teamlead" }) => {
       status: "Pending Approval",
     },
     {
-      id: "67890",
+      id: "67894",
       itemInfo: "Asus ROG Zephyrus G16",
       customer: "BCD Retail",
       item: "45,678",
@@ -92,12 +92,22 @@ const TeamLead = ({ userRole = "teamlead" }) => {
     const updatedOrders = [...orders];
     updatedOrders[index].status = "Approved";
     setOrders(updatedOrders);
+
+    // In real app, this would also update the Orders page to show the approved order
+    console.log(
+      `Order ${updatedOrders[index].id} approved and will appear in Orders`
+    );
   };
 
   const handleDeny = (index) => {
     const updatedOrders = [...orders];
     updatedOrders[index].status = "Denied";
     setOrders(updatedOrders);
+
+    // In real app, this would reflect back to CSR as Denied
+    console.log(
+      `Order ${updatedOrders[index].id} denied and reflected back to CSR`
+    );
   };
 
   const getStatusClass = (status) => {
@@ -118,7 +128,7 @@ const TeamLead = ({ userRole = "teamlead" }) => {
       <Sidebar userRole={userRole} />
       <main className="teamlead-main">
         <header className="teamlead-header">
-          <h1>Approvals</h1>
+          <h1>Approvals - CSR Requests</h1>
           <div className="header-actions">
             <button className="filter-btn">
               <span className="filter-icon">▲</span>
@@ -203,4 +213,4 @@ const TeamLead = ({ userRole = "teamlead" }) => {
   );
 };
 
-export default TeamLead;
+export default TeamLeaderPage;

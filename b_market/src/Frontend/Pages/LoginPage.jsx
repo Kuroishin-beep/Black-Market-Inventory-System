@@ -1,8 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../CSS/Login.css";
-import "../CSS/shared.css";
+import "../CSS/Shared.css";
 
-const Login = () => {
+const LoginPage = ({ setUser }) => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -21,11 +24,23 @@ const Login = () => {
     e.preventDefault();
     // Handle login logic here
     console.log("Login attempt:", formData);
+
+    // For demo purposes, set a fake role based on email
+    // In real app, this would come from authentication response
+    let role = "csr"; // default
+    if (formData.email.includes("teamlead")) role = "teamlead";
+    else if (formData.email.includes("procurement")) role = "procurement";
+    else if (formData.email.includes("warehouse")) role = "warehouse";
+    else if (formData.email.includes("accounting")) role = "accounting";
+
+    setUser({ role });
+
+    // After successful login, redirect to dashboard
+    navigate("/dashboard");
   };
 
   const handleSignUpRedirect = () => {
-    // Handle navigation to sign up page
-    window.location.href = "/signup";
+    navigate("/signup");
   };
 
   return (
@@ -39,7 +54,9 @@ const Login = () => {
           </div>
           <div className="header-actions">
             <button className="help-btn">?</button>
-            <button className="signup-btn">Sign up</button>
+            <button className="signup-btn" onClick={handleSignUpRedirect}>
+              Sign up
+            </button>
           </div>
         </div>
       </header>
@@ -87,7 +104,7 @@ const Login = () => {
                     className="password-toggle"
                     onClick={() => setShowPassword(!showPassword)}
                   >
-                    {showPassword ? "👁" : "👁"}
+                    {showPassword ? "🙈" : "👁"}
                   </button>
                 </div>
               </div>
@@ -114,4 +131,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default LoginPage;

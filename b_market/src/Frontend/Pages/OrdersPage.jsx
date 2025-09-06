@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import Sidebar from "../components/Sidebar";
-import "./Orders.css";
-import "./shared.css";
+import Sidebar from "../Pages/Sidebar";
+import "../CSS/Orders.css";
+import "../CSS/Shared.css";
 
-const Orders = () => {
-  const [userRole, setUserRole] = useState("admin");
+const OrdersPage = () => {
+  const [userRole, setUserRole] = useState("teamlead");
   const [orders] = useState([
     {
       orderId: "#12345",
@@ -25,75 +25,75 @@ const Orders = () => {
       item: "23,456",
     },
     {
-      orderId: "#12345",
+      orderId: "#12346",
       date: "12 Aug, 2025",
       customer: "GHI Retail",
-      productId: "#12345",
+      productId: "#12346",
       total: "$599.75",
       payment: "Pending",
       item: "1,234",
     },
     {
-      orderId: "#67890",
+      orderId: "#67891",
       date: "12 Dec, 2025",
       customer: "JKL Store",
-      productId: "#67890",
+      productId: "#67891",
       total: "$599.75",
       payment: "Paid",
       item: "45,678",
     },
     {
-      orderId: "#12345",
+      orderId: "#12347",
       date: "23 Sept, 2025",
       customer: "MNO Merchandise",
-      productId: "#12345",
+      productId: "#12347",
       total: "$599.75",
       payment: "Pending",
       item: "678",
     },
     {
-      orderId: "#67890",
+      orderId: "#67892",
       date: "17 Oct, 2025",
       customer: "PQR Retail",
-      productId: "#67890",
+      productId: "#67892",
       total: "$599.75",
       payment: "Paid",
       item: "13,567",
     },
     {
-      orderId: "#12345",
+      orderId: "#12348",
       date: "12 July, 2025",
       customer: "STU Merchandise",
-      productId: "#12345",
+      productId: "#12348",
       total: "$599.75",
-      payment: "Pending",
+      payment: "Overdue",
       item: "12,345",
     },
     {
-      orderId: "#67890",
+      orderId: "#67893",
       date: "12 Aug, 2025",
       customer: "VWX Store",
-      productId: "#67890",
+      productId: "#67893",
       total: "$599.75",
       payment: "Paid",
       item: "23,456",
     },
     {
-      orderId: "#12345",
+      orderId: "#12349",
       date: "12 Dec, 2025",
       customer: "YZA Store",
-      productId: "#12345",
+      productId: "#12349",
       total: "$599.75",
       payment: "Pending",
       item: "1,234",
     },
     {
-      orderId: "#67890",
+      orderId: "#67894",
       date: "23 Sept, 2025",
       customer: "BCD Retail",
-      productId: "#67890",
+      productId: "#67894",
       total: "$599.75",
-      payment: "Paid",
+      payment: "Overdue",
       item: "45,678",
     },
   ]);
@@ -101,13 +101,26 @@ const Orders = () => {
   const [currentPage, setCurrentPage] = useState(3);
   const totalPages = 20;
 
+  const getPaymentStatusClass = (payment) => {
+    switch (payment.toLowerCase()) {
+      case "paid":
+        return "paid";
+      case "pending":
+        return "pending";
+      case "overdue":
+        return "overdue";
+      default:
+        return "pending";
+    }
+  };
+
   return (
     <div className="orders-container">
       <Sidebar userRole={userRole} />
 
       <main className="orders-main">
         <div className="orders-header">
-          <h1>Orders</h1>
+          <h1>Orders - Approved by Team Lead</h1>
           <div className="user-info">
             <div className="user-avatar">
               <span className="user-icon">👤</span>
@@ -149,9 +162,9 @@ const Orders = () => {
                     <div className="table-cell">{order.total}</div>
                     <div className="table-cell">
                       <span
-                        className={`status-badge ${
-                          order.payment === "Paid" ? "paid" : "pending"
-                        }`}
+                        className={`status-badge ${getPaymentStatusClass(
+                          order.payment
+                        )}`}
                       >
                         {order.payment}
                       </span>
@@ -196,4 +209,4 @@ const Orders = () => {
   );
 };
 
-export default Orders;
+export default OrdersPage;

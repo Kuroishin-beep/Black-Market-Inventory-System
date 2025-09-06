@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import Sidebar from "../components/Sidebar";
-import "./Warehouse.css";
+import Sidebar from "../Pages/Sidebar";
+import "../CSS/Warehouse.css";
 
-const Warehouse = ({ userRole = "warehouse" }) => {
+const WarehousePage = ({ userRole = "warehouse" }) => {
   const [products, setProducts] = useState([
     {
       id: "12345",
@@ -21,65 +21,65 @@ const Warehouse = ({ userRole = "warehouse" }) => {
       status: "Good",
     },
     {
-      id: "12345",
+      id: "12346",
       itemInfo: "Acer Predator Helios 18P AI",
-      productId: "#12345",
+      productId: "#12346",
       stock: "1,234",
       price: "$599.75",
       status: "Pending",
     },
     {
-      id: "67890",
+      id: "67891",
       itemInfo: "Asus ROG Zephyrus G16",
-      productId: "#67890",
+      productId: "#67891",
       stock: "45,678",
       price: "$599.75",
       status: "Pending",
     },
     {
-      id: "12345",
+      id: "12347",
       itemInfo: "Acer Predator Helios Neo 16",
-      productId: "#12345",
+      productId: "#12347",
       stock: "678",
       price: "$599.75",
       status: "Pending",
     },
     {
-      id: "67890",
+      id: "67892",
       itemInfo: "Dell XPS 13",
-      productId: "#67890",
+      productId: "#67892",
       stock: "13,567",
       price: "$599.75",
       status: "Spoiled",
     },
     {
-      id: "12345",
+      id: "12348",
       itemInfo: "Lenovo ThinkBook Plus Gen 6",
-      productId: "#12345",
+      productId: "#12348",
       stock: "12,345",
       price: "$599.75",
       status: "Damaged",
     },
     {
-      id: "67890",
+      id: "67893",
       itemInfo: "Acer Chromebook Plus Spin 514",
-      productId: "#67890",
+      productId: "#67893",
       stock: "23,456",
       price: "$599.75",
       status: "Good",
     },
     {
-      id: "12345",
+      id: "12349",
       itemInfo: "Acer Predator Helios 18P AI",
-      productId: "#12345",
+      productId: "#12349",
       stock: "1,234",
       price: "$599.75",
       status: "Good",
     },
     {
-      id: "67890",
+      id: "67894",
       itemInfo: "Asus ROG Zephyrus G16",
-      productId: "#67890",
+      productId: "#67894",
       stock: "45,678",
       price: "$599.75",
       status: "Good",
@@ -92,6 +92,11 @@ const Warehouse = ({ userRole = "warehouse" }) => {
     const updatedProducts = [...products];
     updatedProducts[index].status = newStatus;
     setProducts(updatedProducts);
+
+    // This updates will reflect in product/order status across the system
+    console.log(
+      `Product ${updatedProducts[index].productId} status updated to ${newStatus}`
+    );
   };
 
   const getStatusClass = (status) => {
@@ -129,7 +134,7 @@ const Warehouse = ({ userRole = "warehouse" }) => {
       <Sidebar userRole={userRole} />
       <main className="warehouse-main">
         <header className="warehouse-header">
-          <h1>Product</h1>
+          <h1>Warehouse - Product Status Management</h1>
           <div className="header-actions">
             <button className="filter-btn">
               <span className="filter-icon">▲</span>
@@ -148,13 +153,20 @@ const Warehouse = ({ userRole = "warehouse" }) => {
         </header>
 
         <div className="warehouse-content">
+          <div className="status-info">
+            <p>
+              Update product status from default <strong>Pending</strong> to
+              reflect current condition:
+            </p>
+          </div>
+
           <div className="products-table">
             <div className="table-header">
               <div className="header-cell">Item Information</div>
               <div className="header-cell">Product ID</div>
               <div className="header-cell">Stock</div>
               <div className="header-cell">Price</div>
-              <div className="header-cell">Action</div>
+              <div className="header-cell">Status</div>
             </div>
 
             <div className="table-body">
@@ -202,4 +214,4 @@ const Warehouse = ({ userRole = "warehouse" }) => {
   );
 };
 
-export default Warehouse;
+export default WarehousePage;

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import Sidebar from "../components/Sidebar";
-import "./CSR.css";
-import "./shared.css";
+import Sidebar from "../Pages/Sidebar";
+import "../CSS/CSR.css";
+import "../CSS/Shared.css";
 
-const CSR = () => {
+const CSRPage = () => {
   const [userRole, setUserRole] = useState("csr");
   const [orderRequests, setOrderRequests] = useState([
     {
@@ -27,7 +27,7 @@ const CSR = () => {
       customer: "GHI Retail",
       item: "1,234",
       total: "$599.75",
-      status: "approved",
+      status: "denied",
       id: 3,
     },
     {
@@ -88,44 +88,27 @@ const CSR = () => {
     },
   ]);
 
-  const handleApprove = (id) => {
+  const handleSendRequest = (id) => {
+    // Send product approval request to Team Lead
     setOrderRequests((prev) =>
       prev.map((order) =>
-        order.id === id ? { ...order, status: "approved" } : order
+        order.id === id ? { ...order, status: "sent-to-teamlead" } : order
       )
     );
+    console.log(`Sending approval request for order ${id} to Team Lead`);
   };
 
-  const handleDeny = (id) => {
-    setOrderRequests((prev) =>
-      prev.map((order) =>
-        order.id === id ? { ...order, status: "denied" } : order
-      )
-    );
-  };
-
-  const getStatusBadge = (status) => {
-    switch (status) {
-      case "approved":
-        return <span className="status-badge approved">Approved</span>;
-      case "denied":
-        return <span className="status-badge denied">Denied</span>;
-      case "pending":
-      default:
-        return (
-          <div className="action-buttons">
-            <button
-              className="approve-btn"
-              onClick={() => handleApprove(order.id)}
-            >
-              ✓
-            </button>
-            <button className="deny-btn" onClick={() => handleDeny(order.id)}>
-              ✗
-            </button>
-          </div>
-        );
-    }
+  const handleCreateNewRequest = () => {
+    // Add new request functionality
+    const newRequest = {
+      itemInfo: "New Product Request",
+      customer: "New Customer",
+      item: "0",
+      total: "$0.00",
+      status: "pending",
+      id: Date.now(),
+    };
+    setOrderRequests((prev) => [newRequest, ...prev]);
   };
 
   return (
@@ -134,11 +117,18 @@ const CSR = () => {
 
       <main className="csr-main">
         <div className="csr-header">
-          <h1>Order Requests</h1>
+          <h1>CSR Panel - Product Approval Requests</h1>
           <div className="header-actions">
             <button className="filter-btn">
               <span className="filter-icon">🔽</span>
               Filter
+            </button>
+            <button
+              className="add-request-btn"
+              onClick={handleCreateNewRequest}
+            >
+              <span className="add-icon">+</span>
+              New Request
             </button>
           </div>
           <div className="user-info">
@@ -159,7 +149,7 @@ const CSR = () => {
               <div className="header-cell">Customer</div>
               <div className="header-cell">Item</div>
               <div className="header-cell">Total</div>
-              <div className="header-cell">Action</div>
+              <div className="header-cell">Status/Action</div>
             </div>
 
             <div className="table-body">
@@ -170,27 +160,21 @@ const CSR = () => {
                   <div className="table-cell">{order.item}</div>
                   <div className="table-cell">{order.total}</div>
                   <div className="table-cell">
-                    {order.status === "approved" && (
-                      <span className="status-badge approved">Approved</span>
-                    )}
                     {order.status === "denied" && (
                       <span className="status-badge denied">Denied</span>
                     )}
+                    {order.status === "sent-to-teamlead" && (
+                      <span className="status-badge sent">
+                        Sent to Team Lead
+                      </span>
+                    )}
                     {order.status === "pending" && (
-                      <div className="action-buttons">
-                        <button
-                          className="approve-btn"
-                          onClick={() => handleApprove(order.id)}
-                        >
-                          ✓
-                        </button>
-                        <button
-                          className="deny-btn"
-                          onClick={() => handleDeny(order.id)}
-                        >
-                          ✗
-                        </button>
-                      </div>
+                      <button
+                        className="send-request-btn"
+                        onClick={() => handleSendRequest(order.id)}
+                      >
+                        Send to Team Lead
+                      </button>
                     )}
                   </div>
                 </div>
@@ -221,4 +205,4 @@ const CSR = () => {
   );
 };
 
-export default CSR;
+export default CSRPage;

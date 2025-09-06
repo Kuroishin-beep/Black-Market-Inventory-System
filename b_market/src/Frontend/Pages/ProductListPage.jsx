@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import Sidebar from "../components/Sidebar";
-import "./Products.css";
-import "./shared.css";
+import { useNavigate } from "react-router-dom";
+import Sidebar from "../Pages/Sidebar";
+import "../CSS/ProductList.css";
+import "../CSS/Shared.css";
 
-const Products = () => {
+const ProductListPage = () => {
+  const navigate = useNavigate();
   const [userRole, setUserRole] = useState("procurement");
   const [products] = useState([
     {
@@ -22,56 +24,56 @@ const Products = () => {
     },
     {
       name: "Acer Predator Helios 18P AI",
-      id: "#12345",
+      id: "#12346",
       price: "$599.75",
       sales: "$76,543.21",
       stock: "1,234",
     },
     {
       name: "Asus ROG Zephyrus G16",
-      id: "#67890",
+      id: "#67891",
       price: "$599.75",
       sales: "$76,543.21",
       stock: "45,678",
     },
     {
       name: "Acer Predator Helios Neo 16",
-      id: "#12345",
+      id: "#12347",
       price: "$599.75",
       sales: "$76,543.21",
       stock: "678",
     },
     {
       name: "Dell XPS 13",
-      id: "#67890",
+      id: "#67892",
       price: "$599.75",
       sales: "$76,543.21",
       stock: "13,567",
     },
     {
       name: "Lenovo ThinkBook Plus Gen 6",
-      id: "#12345",
+      id: "#12348",
       price: "$599.75",
       sales: "$76,543.21",
       stock: "12,345",
     },
     {
       name: "Acer Chromebook Plus Spin 514",
-      id: "#67890",
+      id: "#67893",
       price: "$599.75",
       sales: "$76,543.21",
       stock: "23,456",
     },
     {
       name: "Acer Predator Helios 18P AI",
-      id: "#12345",
+      id: "#12349",
       price: "$599.75",
       sales: "$76,543.21",
       stock: "1,234",
     },
     {
       name: "Asus ROG Zephyrus G16",
-      id: "#67890",
+      id: "#67894",
       price: "$599.75",
       sales: "$76,543.21",
       stock: "45,678",
@@ -79,8 +81,8 @@ const Products = () => {
   ]);
 
   const handleAddNewProduct = () => {
-    // Redirect to procurement page
-    window.location.href = "/procurement";
+    // Navigate to procurement page to add new product
+    navigate("/procurement");
   };
 
   return (
@@ -89,7 +91,7 @@ const Products = () => {
 
       <main className="products-main">
         <div className="products-header">
-          <h1>Product</h1>
+          <h1>Products</h1>
           <div className="header-actions">
             <button className="filter-btn">
               <span className="filter-icon">🔽</span>
@@ -157,4 +159,4 @@ const Products = () => {
   );
 };
 
-export default Products;
+export default ProductListPage;

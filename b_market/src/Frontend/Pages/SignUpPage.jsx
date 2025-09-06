@@ -1,8 +1,11 @@
 import React, { useState } from "react";
-import "./Signup.css";
-import "./shared.css";
+import { useNavigate } from "react-router-dom";
+import "../CSS/SignUp.css";
+import "../CSS/Shared.css";
 
-const Signup = () => {
+const SignUpPage = ({ setUser }) => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     email: "",
     fullName: "",
@@ -19,8 +22,6 @@ const Signup = () => {
     { value: "procurement", label: "Procurement Staff" },
     { value: "warehouse", label: "Warehouse Staff" },
     { value: "accounting", label: "Accounting Staff" },
-    { value: "customer", label: "Customer" },
-    { value: "admin", label: "Admin" },
   ];
 
   const handleChange = (e) => {
@@ -34,11 +35,12 @@ const Signup = () => {
     e.preventDefault();
     // Handle signup logic here
     console.log("Signup attempt:", formData);
+    // After successful signup, redirect to login
+    navigate("/login");
   };
 
   const handleLoginRedirect = () => {
-    // Handle navigation to login page
-    window.location.href = "/login";
+    navigate("/login");
   };
 
   return (
@@ -52,7 +54,9 @@ const Signup = () => {
           </div>
           <div className="header-actions">
             <button className="help-btn">?</button>
-            <button className="login-btn">Login</button>
+            <button className="login-btn" onClick={handleLoginRedirect}>
+              Login
+            </button>
           </div>
         </div>
       </header>
@@ -160,4 +164,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default SignUpPage;

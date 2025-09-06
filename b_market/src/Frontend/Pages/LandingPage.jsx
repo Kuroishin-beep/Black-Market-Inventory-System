@@ -1,16 +1,17 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import "../CSS/Landing.css";
-import "../CSS/shared.css";
+import "../CSS/Shared.css";
 
 const LandingPage = () => {
+  const navigate = useNavigate();
+
   const handleGetStarted = () => {
-    // Handle navigation to login/signup page
-    window.location.href = "/login";
+    navigate("/signup");
   };
 
   const handleStartManaging = () => {
-    // Handle navigation to login/signup page
-    window.location.href = "/login";
+    navigate("/signup");
   };
 
   return (
@@ -25,7 +26,7 @@ const LandingPage = () => {
           <div className="header-actions">
             <button className="help-btn">?</button>
             <button className="get-started-btn" onClick={handleGetStarted}>
-              Get Started
+              Get Started Today
             </button>
           </div>
         </div>

@@ -1,25 +1,22 @@
 import React from "react";
-import "./Sidebar.css";
+import { Link } from "react-router-dom";
+import "../CSS/Sidebar.css";
 
-const Sidebar = ({ userRole = "customer" }) => {
+const Sidebar = ({ userRole = "csr" }) => {
   const getRoleSpecificButton = () => {
     switch (userRole) {
       case "csr":
-        return { label: "CSR", icon: "🛡️", path: "/csr" };
+        return { label: "CSR Panel", icon: "🛡️", path: "/csr" };
       case "teamlead":
-        return { label: "Approvals", icon: "🛡️", path: "/teamlead" };
+        return { label: "Approvals", icon: "🛡️", path: "/approvals" };
       case "procurement":
         return { label: "Procurement", icon: "➕", path: "/procurement" };
       case "warehouse":
         return { label: "Warehouse", icon: "📦", path: "/warehouse" };
       case "accounting":
         return { label: "Accounting", icon: "💳", path: "/accounting" };
-      case "customer":
-        return { label: "My Orders", icon: "👤", path: "/my-orders" };
-      case "admin":
-        return { label: "Reports", icon: "📊", path: "/reports" };
       default:
-        return { label: "My Orders", icon: "👤", path: "/my-orders" };
+        return { label: "CSR Panel", icon: "🛡️", path: "/csr" };
     }
   };
 
@@ -33,30 +30,30 @@ const Sidebar = ({ userRole = "customer" }) => {
       </div>
 
       <nav className="sidebar-nav">
-        <a href="/dashboard" className="nav-item">
+        <Link to="/dashboard" className="nav-item">
           <span className="nav-icon">🏠</span>
           <span className="nav-label">Dashboard</span>
-        </a>
+        </Link>
 
-        <a href="/products" className="nav-item">
+        <Link to="/products" className="nav-item">
           <span className="nav-icon">🏷️</span>
           <span className="nav-label">Products</span>
-        </a>
+        </Link>
 
-        <a href="/orders" className="nav-item">
+        <Link to="/orders" className="nav-item">
           <span className="nav-icon">🛒</span>
           <span className="nav-label">Orders</span>
-        </a>
+        </Link>
 
-        <a href={roleButton.path} className="nav-item">
+        <Link to={roleButton.path} className="nav-item">
           <span className="nav-icon">{roleButton.icon}</span>
           <span className="nav-label">{roleButton.label}</span>
-        </a>
+        </Link>
 
-        <a href="/logout" className="nav-item logout">
-          <span className="nav-icon">🔤</span>
+        <Link to="/logout" className="nav-item logout">
+          <span className="nav-icon">🚪</span>
           <span className="nav-label">Logout</span>
-        </a>
+        </Link>
       </nav>
     </aside>
   );
