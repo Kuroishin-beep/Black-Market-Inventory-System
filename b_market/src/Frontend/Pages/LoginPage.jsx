@@ -104,7 +104,7 @@ const LoginPage = ({ setUser }) => {
                     className="password-toggle"
                     onClick={() => setShowPassword(!showPassword)}
                   >
-                    {showPassword ? "🙈" : "👁"}
+                    {showPassword ? "👁" : "👁"}
                   </button>
                 </div>
               </div>

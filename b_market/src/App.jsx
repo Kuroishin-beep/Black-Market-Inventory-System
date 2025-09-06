@@ -15,23 +15,24 @@ import ProcurementPage from "./Frontend/Pages/ProcurementPage";
 import WarehousePage from "./Frontend/Pages/WarehousePage";
 import AccountingPage from "./Frontend/Pages/AccountingPage";
 
-// Example fake auth state (replace with real auth later)
-const fakeUser = {
-  role: null, // "csr", "teamlead", "procurement", "warehouse", "accounting"
-};
-
-function ProtectedRoute({ children, allowedRoles }) {
-  if (!fakeUser.role) {
+// ProtectedRoute component
+function ProtectedRoute({ children, allowedRoles, user }) {
+  // If no user is logged in, go to login page
+  if (!user || !user.role) {
     return <Navigate to="/login" replace />;
   }
-  if (!allowedRoles.includes(fakeUser.role)) {
+
+  // If user role is not allowed, send to dashboard
+  if (!allowedRoles.includes(user.role)) {
     return <Navigate to="/dashboard" replace />;
   }
+
   return children;
 }
 
 function App() {
-  const [user, setUser] = useState(fakeUser);
+  // Auth state (replace later with real auth logic)
+  const [user, setUser] = useState(null);
 
   return (
     <Routes>
@@ -45,6 +46,7 @@ function App() {
         path="/dashboard"
         element={
           <ProtectedRoute
+            user={user}
             allowedRoles={[
               "csr",
               "teamlead",
@@ -57,10 +59,12 @@ function App() {
           </ProtectedRoute>
         }
       />
+
       <Route
         path="/products"
         element={
           <ProtectedRoute
+            user={user}
             allowedRoles={[
               "csr",
               "teamlead",
@@ -73,10 +77,12 @@ function App() {
           </ProtectedRoute>
         }
       />
+
       <Route
         path="/orders"
         element={
           <ProtectedRoute
+            user={user}
             allowedRoles={[
               "csr",
               "teamlead",
@@ -94,39 +100,43 @@ function App() {
       <Route
         path="/csr"
         element={
-          <ProtectedRoute allowedRoles={["csr"]}>
+          <ProtectedRoute user={user} allowedRoles={["csr"]}>
             <CSRPage />
           </ProtectedRoute>
         }
       />
+
       <Route
         path="/approvals"
         element={
-          <ProtectedRoute allowedRoles={["teamlead"]}>
+          <ProtectedRoute user={user} allowedRoles={["teamlead"]}>
             <TeamLeaderPage />
           </ProtectedRoute>
         }
       />
+
       <Route
         path="/procurement"
         element={
-          <ProtectedRoute allowedRoles={["procurement"]}>
+          <ProtectedRoute user={user} allowedRoles={["procurement"]}>
             <ProcurementPage />
           </ProtectedRoute>
         }
       />
+
       <Route
         path="/warehouse"
         element={
-          <ProtectedRoute allowedRoles={["warehouse"]}>
+          <ProtectedRoute user={user} allowedRoles={["warehouse"]}>
             <WarehousePage />
           </ProtectedRoute>
         }
       />
+
       <Route
         path="/accounting"
         element={
-          <ProtectedRoute allowedRoles={["accounting"]}>
+          <ProtectedRoute user={user} allowedRoles={["accounting"]}>
             <AccountingPage />
           </ProtectedRoute>
         }
@@ -143,7 +153,7 @@ function App() {
         }
       />
 
-      {/* Default redirect */}
+      {/* Catch-all route */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

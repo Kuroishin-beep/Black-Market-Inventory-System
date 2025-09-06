@@ -1,3 +1,4 @@
+// src/Frontend/Pages/SignUpPage.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../CSS/SignUp.css";
@@ -33,10 +34,17 @@ const SignUpPage = ({ setUser }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle signup logic here
     console.log("Signup attempt:", formData);
-    // After successful signup, redirect to login
-    navigate("/login");
+
+    // Store user data in memory (fake signup)
+    setUser({
+      email: formData.email,
+      fullName: formData.fullName,
+      role: formData.position, // important for routing
+    });
+
+    // Redirect to dashboard
+    navigate("/dashboard");
   };
 
   const handleLoginRedirect = () => {
