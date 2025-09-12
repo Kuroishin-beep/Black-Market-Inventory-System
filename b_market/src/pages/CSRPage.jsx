@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import Sidebar from "../Pages/Sidebar";
-import "../CSS/CSR.css";
-import "../CSS/Shared.css";
+import Sidebar from "../components/Sidebar";
+import "../styles/CSR.css";
+import "../styles/Shared.css";
 
 const CSRPage = () => {
   const [userRole, setUserRole] = useState("csr");

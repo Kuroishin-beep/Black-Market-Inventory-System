@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import Sidebar from "../Pages/Sidebar";
-import "../CSS/Accounting.css";
+import Sidebar from "../components/Sidebar";
+import "../styles/Accounting.css";
 
 const AccountingPage = ({ userRole = "accounting" }) => {
   const [billings, setBillings] = useState([

@@ -3,17 +3,17 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useState } from "react";
 
 // Pages
-import LandingPage from "./Frontend/Pages/LandingPage";
-import LoginPage from "./Frontend/Pages/LoginPage";
-import SignUpPage from "./Frontend/Pages/SignUpPage";
-import DashboardPage from "./Frontend/Pages/DashboardPage";
-import ProductListPage from "./Frontend/Pages/ProductListPage";
-import OrdersPage from "./Frontend/Pages/OrdersPage";
-import CSRPage from "./Frontend/Pages/CSRPage";
-import TeamLeaderPage from "./Frontend/Pages/TeamLeaderPage";
-import ProcurementPage from "./Frontend/Pages/ProcurementPage";
-import WarehousePage from "./Frontend/Pages/WarehousePage";
-import AccountingPage from "./Frontend/Pages/AccountingPage";
+import LandingPage from "./pages/LandingPage";
+import LoginPage from "./pages/LoginPage";
+import SignUpPage from "./pages/SignUpPage";
+import DashboardPage from "./pages/DashboardPage";
+import ProductListPage from "./pages/ProductListPage";
+import OrdersPage from "./pages/OrdersPage";
+import CSRPage from "./pages/CSRPage";
+import TeamLeaderPage from "./pages/TeamLeaderPage";
+import ProcurementPage from "./pages/ProcurementPage";
+import WarehousePage from "./pages/WarehousePage";
+import AccountingPage from "./pages/AccountingPage";
 
 // ProtectedRoute component
 function ProtectedRoute({ children, allowedRoles, user }) {

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import Sidebar from "../Pages/Sidebar";
-import "../CSS/Login.css";
+import Sidebar from "../components/Sidebar";
+import "../styles/Login.css";
 
 const ProcurementPage = ({ userRole = "procurement" }) => {
   const [formData, setFormData] = useState({

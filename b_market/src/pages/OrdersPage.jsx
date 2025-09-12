@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import Sidebar from "../Pages/Sidebar";
-import "../CSS/Orders.css";
-import "../CSS/Shared.css";
+import Sidebar from "../components/Sidebar";
+import "../styles/Orders.css";
+import "../styles/Shared.css";
 
 const OrdersPage = () => {
   const [userRole, setUserRole] = useState("teamlead");

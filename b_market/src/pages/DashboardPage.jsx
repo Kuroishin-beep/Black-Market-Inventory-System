@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import Sidebar from "../Pages/Sidebar";
-import "../CSS/Dashboard.css";
-import "../CSS/Shared.css";
+import Sidebar from "../components/Sidebar";
+import "../styles/Dashboard.css";
+import "../styles/Shared.css";
 
 const DashboardPage = () => {
   const [userRole, setUserRole] = useState("csr"); // Default role, should come from auth context

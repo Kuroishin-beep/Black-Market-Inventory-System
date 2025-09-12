@@ -1,8 +1,8 @@
 // src/Frontend/Pages/SignUpPage.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../CSS/SignUp.css";
-import "../CSS/Shared.css";
+import "../styles/SignUp.css";
+import "../styles/Shared.css";
 
 const SignUpPage = ({ setUser }) => {
   const navigate = useNavigate();

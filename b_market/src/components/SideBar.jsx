@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "../CSS/Sidebar.css";
+import "../styles/Sidebar.css";
 
 const Sidebar = ({ userRole = "csr" }) => {
   const getRoleSpecificButton = () => {

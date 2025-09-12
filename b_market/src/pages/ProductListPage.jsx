@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "../Pages/Sidebar";
-import "../CSS/ProductList.css";
-import "../CSS/Shared.css";
+import Sidebar from "../components/Sidebar";
+import "../styles/ProductList.css";
+import "../styles/Shared.css";
 
 const ProductListPage = () => {
   const navigate = useNavigate();

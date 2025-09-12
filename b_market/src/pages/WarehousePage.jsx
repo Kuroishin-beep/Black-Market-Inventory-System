@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import Sidebar from "../Pages/Sidebar";
-import "../CSS/Warehouse.css";
+import Sidebar from "../components/Sidebar";
+import "../styles/Warehouse.css";
 
 const WarehousePage = ({ userRole = "warehouse" }) => {
   const [products, setProducts] = useState([
