@@ -33,7 +33,12 @@ const LandingPage = () => {
           <button className="landing-header__button--query">
             <HiQuestionMarkCircle />
           </button>
-          <button className="landing-header__button--start">Get Started</button>
+          <button
+            className="landing-header__button--start"
+            onClick={handleGetStarted}
+          >
+            Get Started
+          </button>
         </div>
       </header>
 
@@ -47,7 +52,12 @@ const LandingPage = () => {
             Track stock, purchases, and sales in real <br /> time—all from one
             clean dashboard.
           </p>
-          <button className="landing-card__button">Start Managing Today</button>
+          <button
+            className="landing-card__button"
+            onClick={handleStartManaging}
+          >
+            Start Managing Today
+          </button>
         </div>
       </div>
     </div>
