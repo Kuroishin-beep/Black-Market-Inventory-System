@@ -51,10 +51,6 @@ const LoginPage = ({ setUser }) => {
 
   return (
     <div className="login-container">
-      {/* BACKGROUND */}
-      <div className="login-container__circle--large"></div>
-      <div className="login-container__circle--small"></div>
-
       {/* HEADER */}
       <header className="login-header">
         <div className="login-header__app">

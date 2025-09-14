@@ -19,8 +19,8 @@ const LandingPage = () => {
   return (
     <div className="landing-container">
       {/* BACKGROUND */}
-      <div className="landing-container__circle--large"></div>
-      <div className="landing-container__circle--small"></div>
+      {/* <div className="landing-container__circle--large"></div>
+      <div className="landing-container__circle--small"></div> */}
 
       {/* HEADER */}
       <header className="landing-header">

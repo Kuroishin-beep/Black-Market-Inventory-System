@@ -16,6 +16,17 @@
   background-color: var(--color-primary-2);
   display: flex;
   flex-direction: column;
+  background: radial-gradient(
+      circle 45rem at 20% 30%,
+      var(--color-accent-1),
+      transparent 40%
+    ),
+    radial-gradient(
+      circle 45rem at 80% 70%,
+      var(--color-accent-1),
+      transparent 40%
+    );
+  background-color: #fff9ef;
 }
 
 .landing-container__circle--large {
@@ -46,8 +57,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 20px 60px;
-  background-color: var(--color-primary-2);
-  position: relative;
+  background-color: transparent;
+  position: sticky;
 }
 
 .landing-header__app {
