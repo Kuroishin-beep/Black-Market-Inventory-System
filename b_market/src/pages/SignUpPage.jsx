@@ -3,6 +3,14 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/SignUp.css";
 import "../styles/Shared.css";
+import logo from "../assets/logo.png";
+import { HiQuestionMarkCircle } from "react-icons/hi2";
+import { FaUser } from "react-icons/fa6";
+import { MdLock } from "react-icons/md";
+import { IoEye } from "react-icons/io5";
+import { IoEyeOff } from "react-icons/io5";
+import { IoMail } from "react-icons/io5";
+import { FaCaretDown } from "react-icons/fa";
 
 const SignUpPage = ({ setUser }) => {
   const navigate = useNavigate();
@@ -53,121 +61,102 @@ const SignUpPage = ({ setUser }) => {
 
   return (
     <div className="signup-container">
-      {/* Header */}
+      {/* BACKGROUND */}
+      <div className="signup-container__circle--large"></div>
+      <div className="signup-container__circle--small"></div>
+
+      {/* HEADER */}
       <header className="signup-header">
-        <div className="header-content">
-          <div className="logo">
-            <div className="logo-circle"></div>
-            <span className="logo-text">Black Market</span>
-          </div>
-          <div className="header-actions">
-            <button className="help-btn">?</button>
-            <button className="login-btn" onClick={handleLoginRedirect}>
-              Login
-            </button>
-          </div>
+        <div className="signup-header__app">
+          <img className="signup-header__app--logo" src={logo} alt="logo" />
+          <h1 className="signup-header__app--name">Black Market</h1>
+        </div>
+
+        <div className="signup-header__button">
+          <button className="signup-header__button--query">
+            <HiQuestionMarkCircle />
+          </button>
+          <button className="signup-header__button--signup">Login</button>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="signup-main">
-        <div className="signup-card">
-          <div className="signup-form-container">
-            <h1 className="signup-title">SIGN UP</h1>
-            <p className="signup-subtitle">
-              Start organizing your stock with efficiency and ease.
-            </p>
+      {/* MAIN CONTENT */}
+      <div className="signup-card">
+        <div className="signup-card__box">
+          <h1 className="signup-card__title">SIGN UP</h1>
+          <p className="signup-card__description">
+            Start organizing your stock with <br /> efficiency and ease.
+          </p>
 
-            <form onSubmit={handleSubmit} className="signup-form">
-              <div className="form-group">
-                <div className="input-container">
-                  <span className="input-icon">✉️</span>
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder="Email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="form-input signup-input"
-                    required
-                  />
-                </div>
+          <form action="">
+            <div className="signup-card__form">
+              <div className="signup-card__input-wrapper">
+                <IoMail className="signup-card__icon" />
+                <input
+                  type="email"
+                  placeholder="Email"
+                  className="signup-card__form--email"
+                />
               </div>
+            </div>
 
-              <div className="form-group">
-                <div className="input-container">
-                  <span className="input-icon">👤</span>
-                  <input
-                    type="text"
-                    name="fullName"
-                    placeholder="Full Name"
-                    value={formData.fullName}
-                    onChange={handleChange}
-                    className="form-input signup-input"
-                    required
-                  />
-                </div>
+            <div className="signup-card__form">
+              <div className="signup-card__input-wrapper">
+                <FaUser className="signup-card__icon" />
+                <input
+                  type="text"
+                  placeholder="Full Name"
+                  className="signup-card__form--name"
+                />
               </div>
+            </div>
 
-              <div className="form-group">
-                <div className="input-container">
-                  <span className="input-icon">🔒</span>
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    placeholder="Password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    className="form-input signup-input"
-                    required
-                  />
-                  <button
-                    type="button"
-                    className="password-toggle"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? "🙈" : "👁️"}
-                  </button>
-                </div>
-              </div>
-
-              <div className="form-group">
-                <div className="select-container">
-                  <span className="select-icon">▼</span>
-                  <select
-                    name="position"
-                    value={formData.position}
-                    onChange={handleChange}
-                    className="form-select signup-select"
-                    required
-                  >
-                    {positions.map((position) => (
-                      <option key={position.value} value={position.value}>
-                        {position.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <button type="submit" className="signup-submit-btn">
-                Sign up
-              </button>
-
-              <div className="signup-footer">
-                <p className="login-prompt">Already have an account?</p>
+            <div className="signup-card__form">
+              <div className="signup-card__input-wrapper">
+                <MdLock className="signup-card__icon" />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Password"
+                  className="signup-card__form--password"
+                />
                 <button
                   type="button"
-                  className="login-link-btn"
-                  onClick={handleLoginRedirect}
+                  className="signup-card__password-toggle"
+                  onClick={() => setShowPassword((prev) => !prev)}
                 >
-                  Login
+                  {showPassword ? <IoEyeOff /> : <IoEye />}
                 </button>
               </div>
-            </form>
-          </div>
+            </div>
+
+            <div className="signup-card__form">
+              <div className="signup-card__input-wrapper">
+                <FaCaretDown className="signup-card__icon" />
+                <select
+                  className="signup-card__position"
+                  id="job-title"
+                  name="job-title"
+                  defaultValue=""
+                >
+                  {positions.map((position) => (
+                    <option key={position.value} value={position.value}>
+                      {position.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <button className="signup-card__form--signup">Signup</button>
+
+            <p className="signup-card__form--footer">
+              Don't have an account yet?
+            </p>
+
+            <button className="signup-card__form--login">Login</button>
+          </form>
         </div>
-      </main>
+      </div>
     </div>
   );
 };

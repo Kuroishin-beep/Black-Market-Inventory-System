@@ -2,6 +2,12 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/Login.css";
 import "../styles/Shared.css";
+import logo from "../assets/logo.png";
+import { HiQuestionMarkCircle } from "react-icons/hi2";
+import { FaUser } from "react-icons/fa6";
+import { MdLock } from "react-icons/md";
+import { IoEye } from "react-icons/io5";
+import { IoEyeOff } from "react-icons/io5";
 
 const LoginPage = ({ setUser }) => {
   const navigate = useNavigate();
@@ -45,88 +51,74 @@ const LoginPage = ({ setUser }) => {
 
   return (
     <div className="login-container">
-      {/* Header */}
+      {/* BACKGROUND */}
+      <div className="login-container__circle--large"></div>
+      <div className="login-container__circle--small"></div>
+
+      {/* HEADER */}
       <header className="login-header">
-        <div className="header-content">
-          <div className="logo">
-            <div className="logo-circle"></div>
-            <span className="logo-text">Black Market</span>
-          </div>
-          <div className="header-actions">
-            <button className="help-btn">?</button>
-            <button className="signup-btn" onClick={handleSignUpRedirect}>
-              Sign up
-            </button>
-          </div>
+        <div className="login-header__app">
+          <img className="login-header__app--logo" src={logo} alt="logo" />
+          <h1 className="login-header__app--name">Black Market</h1>
+        </div>
+
+        <div className="login-header__button">
+          <button className="login-header__button--query">
+            <HiQuestionMarkCircle />
+          </button>
+          <button className="login-header__button--signup">Sign up</button>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="login-main">
-        <div className="login-card">
-          <div className="login-form-container">
-            <h1 className="login-title">LOGIN</h1>
-            <p className="login-subtitle">
-              Log in to manage stock, monitor sales, and stay updated—anytime,
-              anywhere.
-            </p>
+      {/* MAIN CONTENT */}
+      <div className="login-card">
+        <div className="login-card__box">
+          <h1 className="login-card__title">LOGIN</h1>
+          <p className="login-card__description">
+            Log in to manage stock, monitor sales, and <br /> stay
+            updated—anytime, anywhere.
+          </p>
 
-            <form onSubmit={handleSubmit} className="login-form">
-              <div className="form-group">
-                <div className="input-container">
-                  <span className="input-icon"></span>
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder="Email or Staff ID"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="form-input login-input"
-                    required
-                  />
-                </div>
+          <form action="">
+            <div className="login-card__form">
+              <div className="login-card__input-wrapper">
+                <FaUser className="login-card__icon" />
+                <input
+                  type="text"
+                  placeholder="Email or Staff ID"
+                  className="login-card__form--email"
+                />
               </div>
+            </div>
 
-              <div className="form-group">
-                <div className="input-container">
-                  <span className="input-icon"></span>
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    placeholder="Password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    className="form-input login-input"
-                    required
-                  />
-                  <button
-                    type="button"
-                    className="password-toggle"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? "👁" : "👁"}
-                  </button>
-                </div>
-              </div>
-
-              <button type="submit" className="login-submit-btn">
-                Login
-              </button>
-
-              <div className="login-footer">
-                <p className="signup-prompt">Don't have an account yet?</p>
+            <div className="login-card__form">
+              <div className="login-card__input-wrapper">
+                <MdLock className="login-card__icon" />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Password"
+                  className="login-card__form--password"
+                />
                 <button
                   type="button"
-                  className="signup-link-btn"
-                  onClick={handleSignUpRedirect}
+                  className="login-card__password-toggle"
+                  onClick={() => setShowPassword((prev) => !prev)}
                 >
-                  Sign up
+                  {showPassword ? <IoEyeOff /> : <IoEye />}
                 </button>
               </div>
-            </form>
-          </div>
+            </div>
+
+            <button className="login-card__form--login">Login</button>
+
+            <p className="login-card__form--footer">
+              Don't have an account yet?
+            </p>
+
+            <button className="login-card__form--signup">Signup</button>
+          </form>
         </div>
-      </main>
+      </div>
     </div>
   );
 };
