@@ -8,20 +8,8 @@ import { HiQuestionMarkCircle } from "react-icons/hi2";
 const LandingPage = () => {
   const navigate = useNavigate();
 
-  const handleGetStarted = () => {
-    navigate("/signup");
-  };
-
-  const handleStartManaging = () => {
-    navigate("/signup");
-  };
-
   return (
     <div className="landing-container">
-      {/* BACKGROUND */}
-      {/* <div className="landing-container__circle--large"></div>
-      <div className="landing-container__circle--small"></div> */}
-
       {/* HEADER */}
       <header className="landing-header">
         <div className="landing-header__app">
@@ -35,7 +23,7 @@ const LandingPage = () => {
           </button>
           <button
             className="landing-header__button--start"
-            onClick={handleGetStarted}
+            onClick={() => navigate("/signup")}
           >
             Get Started
           </button>
@@ -54,7 +42,7 @@ const LandingPage = () => {
           </p>
           <button
             className="landing-card__button"
-            onClick={handleStartManaging}
+            onClick={() => navigate("/signup")}
           >
             Start Managing Today
           </button>

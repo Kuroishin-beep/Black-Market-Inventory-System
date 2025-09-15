@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "../components/Sidebar";
+import Sidebar from "../components/SideBar";
 import "../styles/ProductList.css";
 import "../styles/Shared.css";
+import { FaUserCircle } from "react-icons/fa";
+import { CiFilter } from "react-icons/ci";
+import { LuPlus } from "react-icons/lu";
 
 const ProductListPage = () => {
   const navigate = useNavigate();
@@ -86,75 +89,75 @@ const ProductListPage = () => {
   };
 
   return (
-    <div className="products-container">
+    <div className="product-container">
       <Sidebar userRole={userRole} />
 
-      <main className="products-main">
-        <div className="products-header">
-          <h1>Products</h1>
-          <div className="header-actions">
-            <button className="filter-btn">
-              <span className="filter-icon">🔽</span>
-              Filter
-            </button>
-            <button className="add-product-btn" onClick={handleAddNewProduct}>
-              <span className="add-icon">+</span>
-              Add New Product
-            </button>
+      <div className="product-content">
+        <header className="product-header">
+          <FaUserCircle className="user-pfp" />
+          <div className="user-details">
+            <span className="user-name">Mark Anthony Dela Cruz</span>
+            <span className="user-id">#081203</span>
           </div>
-          <div className="user-info">
-            <div className="user-avatar">
-              <span className="user-icon">👤</span>
-            </div>
-            <div className="user-details">
-              <span className="user-name">Mark Anthony Dela Cruz</span>
-              <span className="user-id">#081203</span>
-            </div>
-          </div>
-        </div>
+        </header>
 
-        <div className="products-content">
-          <div className="products-table">
-            <div className="table-header">
-              <div className="header-cell">Product Name</div>
-              <div className="header-cell">Product ID</div>
-              <div className="header-cell">Price</div>
-              <div className="header-cell">Sales</div>
-              <div className="header-cell">Stock</div>
-            </div>
+        <main className="product-main">
+          <div className="product-main__header">
+            <h1 className="product-title">Product</h1>
 
-            <div className="table-body">
-              {products.map((product, index) => (
-                <div key={index} className="table-row">
-                  <div className="table-cell">{product.name}</div>
-                  <div className="table-cell">{product.id}</div>
-                  <div className="table-cell">{product.price}</div>
-                  <div className="table-cell">{product.sales}</div>
-                  <div className="table-cell">{product.stock}</div>
-                </div>
-              ))}
+            <div className="product-main__header--buttons">
+              <button className="product-main__filter">
+                <CiFilter className="product-icon filter" />
+                Filter
+              </button>
+              <button className="product-main__procurement">
+                <LuPlus className="product-icon plus" />
+                Add New Product
+              </button>
             </div>
           </div>
 
-          <div className="pagination">
-            <button className="pagination-btn">
-              <span>←</span> Previous
-            </button>
+          <div className="product-table__main">
+            <div className="products-table">
+              <div className="table-header">
+                <div className="header-cell">Product Name</div>
+                <div className="header-cell">Product ID</div>
+                <div className="header-cell">Price</div>
+                <div className="header-cell">Sales</div>
+                <div className="header-cell">Stock</div>
+              </div>
 
-            <div className="page-numbers">
-              <span className="page-number">01</span>
-              <span className="page-number">02</span>
-              <span className="page-number active">03</span>
-              <span className="page-dots">...</span>
-              <span className="page-number">20</span>
+              <div className="table-body">
+                {products.map((product, index) => (
+                  <div key={index} className="table-row">
+                    <div className="table-cell">{product.name}</div>
+                    <div className="table-cell">{product.id}</div>
+                    <div className="table-cell">{product.price}</div>
+                    <div className="table-cell">{product.sales}</div>
+                    <div className="table-cell">{product.stock}</div>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <button className="pagination-btn">
-              Next <span>→</span>
-            </button>
+            <div className="pagination">
+              <button className="pagination-btn">
+                <span>←</span> Previous
+              </button>
+
+              <div className="page-numbers">
+                <span className="page-number">01</span>
+                <span className="page-number">02</span>
+                <span className="page-number">03</span>
+              </div>
+
+              <button className="pagination-btn">
+                Next <span>→</span>
+              </button>
+            </div>
           </div>
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 };

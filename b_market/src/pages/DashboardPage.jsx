@@ -182,6 +182,7 @@ const DashboardPage = () => {
   return (
     <div className="dashboard-container">
       <Sidebar />
+
       <div className="dashboard-content">
         <header className="dashboard-header">
           <FaUserCircle className="user-pfp" />
