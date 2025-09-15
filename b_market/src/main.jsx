@@ -10,11 +10,12 @@ import DashboardPage from "./pages/DashboardPage.jsx";
 import ProductList from "./pages/ProductListPage.jsx";
 import ProcurementPage from "./pages/ProcurementPage.jsx";
 import CSRPage from "./pages/CSRPage.jsx";
+import TeamLeaderPage from "./pages/TeamLeaderPage.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
-      <CSRPage />
+      <TeamLeaderPage />
     </BrowserRouter>
   </StrictMode>
 );
