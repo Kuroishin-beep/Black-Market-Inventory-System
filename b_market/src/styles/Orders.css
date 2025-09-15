@@ -138,7 +138,7 @@
   color: #1e1e1e;
 }
 
-.status-badge {
+/* .status-badge {
   display: inline-block;
   padding: 4px 12px;
   border-radius: 20px;
@@ -155,7 +155,7 @@
 .status-badge.pending {
   background-color: #fef3c7;
   color: #d97706;
-}
+} */
 
 .pagination {
   display: flex;
@@ -224,28 +224,28 @@
     margin-left: 0;
     padding: 15px;
   }
-  
+
   .orders-header h1 {
     font-size: 32px;
   }
-  
+
   .table-header,
   .table-row {
     grid-template-columns: 1fr;
     gap: 8px;
   }
-  
+
   .header-cell {
     display: none;
   }
-  
+
   .table-cell {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 8px 0;
   }
-  
+
   .pagination {
     flex-direction: column;
     gap: 16px;

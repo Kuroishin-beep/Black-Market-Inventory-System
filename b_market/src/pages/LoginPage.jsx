@@ -62,7 +62,12 @@ const LoginPage = ({ setUser }) => {
           <button className="login-header__button--query">
             <HiQuestionMarkCircle />
           </button>
-          <button className="login-header__button--signup">Sign up</button>
+          <button
+            className="login-header__button--signup"
+            onClick={handleSignUpRedirect}
+          >
+            Sign up
+          </button>
         </div>
       </header>
 

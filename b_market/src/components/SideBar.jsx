@@ -1,67 +1,138 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import Tooltip from "@mui/material/Tooltip";
 import "../styles/Sidebar.css";
 import logo from "../assets/logo.png";
 
+// specific roles icons
+import { PiHeadsetFill } from "react-icons/pi";
+import { PiHeadsetLight } from "react-icons/pi";
+import { FaCirclePlus } from "react-icons/fa6";
+import { FiPlusCircle } from "react-icons/fi";
+import { BsBoxFill } from "react-icons/bs";
+import { BsBox } from "react-icons/bs";
+import { IoCard } from "react-icons/io5";
+import { IoCardOutline } from "react-icons/io5";
+
+// sidebar icons
+import { GoHomeFill } from "react-icons/go";
+import { GoHome } from "react-icons/go";
+import { IoPricetag } from "react-icons/io5";
+import { IoPricetagOutline } from "react-icons/io5";
+import { PiShoppingCartFill } from "react-icons/pi";
+import { PiShoppingCartLight } from "react-icons/pi";
+import { IoLogOutOutline } from "react-icons/io5";
+
 const Sidebar = ({ userRole = "csr" }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [active, setActive] = useState("/dashboard");
+
   const getRoleSpecificButton = () => {
     switch (userRole) {
       case "csr":
-        return { label: "CSR Panel", icon: "🛡️", path: "/csr" };
+        return {
+          name: "CSR Panel",
+          iconIdle: <PiHeadsetLight />,
+          iconActive: <PiHeadsetFill />,
+          path: "/csr",
+        };
       case "teamlead":
-        return { label: "Approvals", icon: "🛡️", path: "/approvals" };
+        return {
+          name: "Approvals",
+          iconIdle: <PiHeadsetLight />,
+          iconActive: <PiHeadsetFill />,
+          path: "/approvals",
+        };
       case "procurement":
-        return { label: "Procurement", icon: "➕", path: "/procurement" };
+        return {
+          name: "Procurement",
+          iconIdle: <FiPlusCircle />,
+          iconActive: <FaCirclePlus />,
+          path: "/procurement",
+        };
       case "warehouse":
-        return { label: "Warehouse", icon: "📦", path: "/warehouse" };
+        return {
+          name: "Warehouse",
+          iconIdle: <BsBox />,
+          iconActive: <BsBoxFill />,
+          path: "/warehouse",
+        };
       case "accounting":
-        return { label: "Accounting", icon: "💳", path: "/accounting" };
-      default:
-        return { label: "CSR Panel", icon: "🛡️", path: "/csr" };
+        return {
+          name: "Accounting",
+          iconIdle: <IoCardOutline />,
+          iconActive: <IoCard />,
+          path: "/accounting",
+        };
     }
   };
 
   const roleButton = getRoleSpecificButton();
 
-  // return (
-  //   <aside className="sidebar">
-  //     <div className="sidebar-logo">
-  //       <div className="logo-circle"></div>
-  //       <span className="logo-text">Black Market</span>
-  //     </div>
+  const navItems = [
+    {
+      name: "Dashboard",
+      iconIdle: <GoHome />,
+      iconActive: <GoHomeFill />,
+      path: "/dashboard",
+    },
+    {
+      name: "Items",
+      iconIdle: <IoPricetagOutline />,
+      iconActive: <IoPricetag />,
+      path: "/products",
+    },
+    {
+      name: "Shopping Cart",
+      iconIdle: <PiShoppingCartLight />,
+      iconActive: <PiShoppingCartFill />,
+      path: "/cart",
+    },
 
-  //     <nav className="sidebar-nav">
-  //       <Link to="/dashboard" className="nav-item">
-  //         <span className="nav-icon">🏠</span>
-  //         <span className="nav-label">Dashboard</span>
-  //       </Link>
-
-  //       <Link to="/products" className="nav-item">
-  //         <span className="nav-icon">🏷️</span>
-  //         <span className="nav-label">Products</span>
-  //       </Link>
-
-  //       <Link to="/orders" className="nav-item">
-  //         <span className="nav-icon">🛒</span>
-  //         <span className="nav-label">Orders</span>
-  //       </Link>
-
-  //       <Link to={roleButton.path} className="nav-item">
-  //         <span className="nav-icon">{roleButton.icon}</span>
-  //         <span className="nav-label">{roleButton.label}</span>
-  //       </Link>
-
-  //       <Link to="/logout" className="nav-item logout">
-  //         <span className="nav-icon">🚪</span>
-  //         <span className="nav-label">Logout</span>
-  //       </Link>
-  //     </nav>
-  //   </aside>
-  // );
+    roleButton,
+  ];
 
   return (
     <aside className="sidebar">
       <img className="landing-header__app--logo" src={logo} alt="logo" />
+
+      <nav className="sidebar-nav">
+        {navItems.map((item) => {
+          const isActive = active === item.path;
+          return (
+            <Tooltip key={item.name} title={item.name} placement="right">
+              <div
+                className={isActive ? "nav-item active" : "nav-item"}
+                onClick={() => {
+                  setActive(item.path);
+                  navigate(item.path);
+                }}
+              >
+                <span className="nav-icon">
+                  {isActive ? item.iconActive : item.iconIdle}
+                </span>
+              </div>
+            </Tooltip>
+          );
+        })}
+      </nav>
+
+      <div className="sidebar-footer">
+        <Tooltip title="Logout" placement="right">
+          <div
+            className="logout"
+            onClick={() => {
+              setActive("/");
+              navigate("/");
+            }}
+          >
+            <span className="nav-item logout">
+              <IoLogOutOutline />
+            </span>
+          </div>
+        </Tooltip>
+      </div>
     </aside>
   );
 };

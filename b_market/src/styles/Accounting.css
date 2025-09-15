@@ -139,7 +139,7 @@
   color: #1e1e1e;
 }
 
-.status-badge {
+/* .status-badge {
   display: inline-block;
   padding: 4px 12px;
   border-radius: 20px;
@@ -161,7 +161,7 @@
 .status-badge.overdue {
   background-color: #fee2e2;
   color: #dc2626;
-}
+} */
 
 .action-icon {
   font-size: 16px;
@@ -241,39 +241,39 @@
     margin-left: 0;
     padding: 15px;
   }
-  
+
   .accounting-header {
     flex-direction: column;
     gap: 16px;
     align-items: flex-start;
   }
-  
+
   .accounting-header h1 {
     font-size: 32px;
   }
-  
+
   .header-actions {
     position: static;
     transform: none;
   }
-  
+
   .table-header,
   .table-row {
     grid-template-columns: 1fr;
     gap: 8px;
   }
-  
+
   .header-cell {
     display: none;
   }
-  
+
   .table-cell {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 8px 0;
   }
-  
+
   .pagination {
     flex-direction: column;
     gap: 16px;

@@ -11,7 +11,7 @@ import DashboardPage from "./pages/DashboardPage.jsx";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
-      <DashboardPage />
+      <App />
     </BrowserRouter>
   </StrictMode>
 );
