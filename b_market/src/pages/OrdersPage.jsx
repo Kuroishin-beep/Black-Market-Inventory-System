@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import Sidebar from "../components/Sidebar";
+import Sidebar from "../components/SideBar";
 import "../styles/Orders.css";
 import "../styles/Shared.css";
+import { FaUserCircle } from "react-icons/fa";
+import { CiFilter } from "react-icons/ci";
 
 const OrdersPage = () => {
   const [userRole, setUserRole] = useState("teamlead");
@@ -118,93 +120,86 @@ const OrdersPage = () => {
     <div className="orders-container">
       <Sidebar userRole={userRole} />
 
-      <main className="orders-main">
-        <div className="orders-header">
-          <h1>Orders - Approved by Team Lead</h1>
-          <div className="user-info">
-            <div className="user-avatar">
-              <span className="user-icon">👤</span>
-            </div>
-            <div className="user-details">
-              <span className="user-name">Mark Anthony Dela Cruz</span>
-              <span className="user-id">#081203</span>
-            </div>
+      <div className="orders-content">
+        {/* Header */}
+        <header className="dashboard-header">
+          <FaUserCircle className="user-pfp" />
+          <div className="user-details">
+            <span className="user-name">Mark Anthony Dela Cruz</span>
+            <span className="user-id">#081203</span>
           </div>
-        </div>
+        </header>
 
-        <div className="orders-content">
-          <div className="table-container">
-            <div className="table-actions">
-              <button className="filter-btn">
-                <span className="filter-icon">🔽</span>
+        {/* Main Content */}
+        <main className="orders-main">
+          <div className="orders-main__header">
+            <h1 className="orders-title">Orders</h1>
+            <div className="orders-main__header--buttons">
+              <button className="orders-main__filter">
+                <CiFilter className="orders-icon filter" />
                 Filter
               </button>
             </div>
+          </div>
 
-            <div className="orders-table">
-              <div className="table-header">
-                <div className="header-cell">Order ID</div>
-                <div className="header-cell">Date</div>
-                <div className="header-cell">Customer</div>
-                <div className="header-cell">Product ID</div>
-                <div className="header-cell">Total</div>
-                <div className="header-cell">Payment</div>
-                <div className="header-cell">Item</div>
-              </div>
-
-              <div className="table-body">
+          {/* Orders Table */}
+          <div className="orders-table__main">
+            <table className="orders-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Date</th>
+                  <th>Customer</th>
+                  <th>Product ID</th>
+                  <th>Total</th>
+                  <th>Item</th>
+                  <th className="last-column">Payment</th>
+                </tr>
+              </thead>
+              <tbody>
                 {orders.map((order, index) => (
-                  <div key={index} className="table-row">
-                    <div className="table-cell">{order.orderId}</div>
-                    <div className="table-cell">{order.date}</div>
-                    <div className="table-cell">{order.customer}</div>
-                    <div className="table-cell">{order.productId}</div>
-                    <div className="table-cell">{order.total}</div>
-                    <div className="table-cell">
+                  <tr key={index}>
+                    <td>{order.orderId}</td>
+                    <td>{order.date}</td>
+                    <td>{order.customer}</td>
+                    <td>{order.productId}</td>
+                    <td>{order.total}</td>
+                    <td>{order.item}</td>
+                    <td className="last-column">
                       <span
-                        className={`status-badge ${getPaymentStatusClass(
+                        className={`badge ${getPaymentStatusClass(
                           order.payment
                         )}`}
                       >
                         {order.payment}
                       </span>
-                    </div>
-                    <div className="table-cell">{order.item}</div>
-                  </div>
+                    </td>
+                  </tr>
                 ))}
-              </div>
-            </div>
+              </tbody>
+            </table>
 
+            {/* Pagination */}
             <div className="pagination">
-              <button
-                className="pagination-btn"
-                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                disabled={currentPage === 1}
-              >
+              <button className="pagination-btn">
                 <span>←</span> Previous
               </button>
 
               <div className="page-numbers">
                 <span className="page-number">01</span>
                 <span className="page-number">02</span>
-                <span className="page-number active">03</span>
-                <span className="page-dots">...</span>
-                <span className="page-number">{totalPages}</span>
+                <span className="page-number">
+                  {String(currentPage).padStart(2, "0")}
+                </span>
               </div>
 
-              <button
-                className="pagination-btn"
-                onClick={() =>
-                  setCurrentPage(Math.min(totalPages, currentPage + 1))
-                }
-                disabled={currentPage === totalPages}
-              >
+              <button className="pagination-btn">
                 Next <span>→</span>
               </button>
             </div>
           </div>
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 };

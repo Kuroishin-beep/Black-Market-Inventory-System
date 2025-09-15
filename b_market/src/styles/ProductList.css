@@ -209,8 +209,3 @@
 .page-number:hover {
   background-color: var(--color-primary-2);
 }
-
-.page-dots {
-  color: #666;
-  font-size: 14px;
-}

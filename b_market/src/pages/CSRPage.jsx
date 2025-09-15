@@ -1,7 +1,11 @@
 import React, { useState } from "react";
-import Sidebar from "../components/Sidebar";
+import Sidebar from "../components/SideBar";
 import "../styles/CSR.css";
 import "../styles/Shared.css";
+import { FaUserCircle } from "react-icons/fa";
+import { CiFilter } from "react-icons/ci";
+import { BsCheckSquare } from "react-icons/bs";
+import { BsXSquare } from "react-icons/bs";
 
 const CSRPage = () => {
   const [userRole, setUserRole] = useState("csr");
@@ -19,7 +23,7 @@ const CSRPage = () => {
       customer: "DEF Merchandise",
       item: "23,456",
       total: "$599.75",
-      status: "pending",
+      status: "denied",
       id: 2,
     },
     {
@@ -27,7 +31,7 @@ const CSRPage = () => {
       customer: "GHI Retail",
       item: "1,234",
       total: "$599.75",
-      status: "denied",
+      status: "pending",
       id: 3,
     },
     {
@@ -35,7 +39,7 @@ const CSRPage = () => {
       customer: "JKL Store",
       item: "45,678",
       total: "$599.75",
-      status: "pending",
+      status: "denied",
       id: 4,
     },
     {
@@ -75,7 +79,7 @@ const CSRPage = () => {
       customer: "YZA Store",
       item: "1,234",
       total: "$599.75",
-      status: "pending",
+      status: "denied",
       id: 9,
     },
     {
@@ -98,6 +102,12 @@ const CSRPage = () => {
     console.log(`Sending approval request for order ${id} to Team Lead`);
   };
 
+  const handleSetStatus = (id, newStatus) => {
+    setOrderRequests((prev) =>
+      prev.map((o) => (o.id === id ? { ...o, status: newStatus } : o))
+    );
+  };
+
   const handleCreateNewRequest = () => {
     // Add new request functionality
     const newRequest = {
@@ -111,96 +121,199 @@ const CSRPage = () => {
     setOrderRequests((prev) => [newRequest, ...prev]);
   };
 
+  // return (
+  //   <div className="csr-container">
+  //     <Sidebar userRole={userRole} />
+
+  //     <main className="csr-main">
+  //       <div className="csr-header">
+  //         <h1>CSR Panel - Product Approval Requests</h1>
+  //         <div className="header-actions">
+  //           <button className="filter-btn">
+  //             <span className="filter-icon">🔽</span>
+  //             Filter
+  //           </button>
+  //           <button
+  //             className="add-request-btn"
+  //             onClick={handleCreateNewRequest}
+  //           >
+  //             <span className="add-icon">+</span>
+  //             New Request
+  //           </button>
+  //         </div>
+  //         <div className="user-info">
+  //           <div className="user-avatar">
+  //             <span className="user-icon">👤</span>
+  //           </div>
+  //           <div className="user-details">
+  //             <span className="user-name">Mark Anthony Dela Cruz</span>
+  //             <span className="user-id">#081203</span>
+  //           </div>
+  //         </div>
+  //       </div>
+
+  //       <div className="csr-content">
+  //         <div className="orders-table">
+  //           <div className="table-header">
+  //             <div className="header-cell">Item Information</div>
+  //             <div className="header-cell">Customer</div>
+  //             <div className="header-cell">Item</div>
+  //             <div className="header-cell">Total</div>
+  //             <div className="header-cell">Status/Action</div>
+  //           </div>
+
+  //           <div className="table-body">
+  //             {orderRequests.map((order, index) => (
+  //               <div key={index} className="table-row">
+  //                 <div className="table-cell">{order.itemInfo}</div>
+  //                 <div className="table-cell">{order.customer}</div>
+  //                 <div className="table-cell">{order.item}</div>
+  //                 <div className="table-cell">{order.total}</div>
+  //                 <div className="table-cell">
+  //                   {order.status === "denied" && (
+  //                     <span className="status-badge denied">Denied</span>
+  //                   )}
+  //                   {order.status === "sent-to-teamlead" && (
+  //                     <span className="status-badge sent">
+  //                       Sent to Team Lead
+  //                     </span>
+  //                   )}
+  //                   {order.status === "pending" && (
+  //                     <button
+  //                       className="send-request-btn"
+  //                       onClick={() => handleSendRequest(order.id)}
+  //                     >
+  //                       Send to Team Lead
+  //                     </button>
+  //                   )}
+  //                 </div>
+  //               </div>
+  //             ))}
+  //           </div>
+  //         </div>
+
+  //         <div className="pagination">
+  //           <button className="pagination-btn">
+  //             <span>←</span> Previous
+  //           </button>
+
+  //           <div className="page-numbers">
+  //             <span className="page-number">01</span>
+  //             <span className="page-number">02</span>
+  //             <span className="page-number active">03</span>
+  //             <span className="page-dots">...</span>
+  //             <span className="page-number">20</span>
+  //           </div>
+
+  //           <button className="pagination-btn">
+  //             Next <span>→</span>
+  //           </button>
+  //         </div>
+  //       </div>
+  //     </main>
+  //   </div>
+  // );
+
+  const capitalize = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
+
   return (
     <div className="csr-container">
       <Sidebar userRole={userRole} />
-
-      <main className="csr-main">
-        <div className="csr-header">
-          <h1>CSR Panel - Product Approval Requests</h1>
-          <div className="header-actions">
-            <button className="filter-btn">
-              <span className="filter-icon">🔽</span>
-              Filter
-            </button>
-            <button
-              className="add-request-btn"
-              onClick={handleCreateNewRequest}
-            >
-              <span className="add-icon">+</span>
-              New Request
-            </button>
+      <div className="csr-content">
+        <header className="csr-header">
+          <FaUserCircle className="user-pfp" />
+          <div className="user-details">
+            <span className="user-name">Mark Anthony Dela Cruz</span>
+            <span className="user-id">#081203</span>
           </div>
-          <div className="user-info">
-            <div className="user-avatar">
-              <span className="user-icon">👤</span>
-            </div>
-            <div className="user-details">
-              <span className="user-name">Mark Anthony Dela Cruz</span>
-              <span className="user-id">#081203</span>
+        </header>
+
+        <main className="csr-main">
+          <div className="csr-main__header">
+            <h1 className="csr-title">Order Requests</h1>
+            <div className="csr-main__header--buttons">
+              <button className="csr-main__filter">
+                <CiFilter className="csr-icon filter" /> Filter
+              </button>
             </div>
           </div>
-        </div>
 
-        <div className="csr-content">
-          <div className="orders-table">
-            <div className="table-header">
-              <div className="header-cell">Item Information</div>
-              <div className="header-cell">Customer</div>
-              <div className="header-cell">Item</div>
-              <div className="header-cell">Total</div>
-              <div className="header-cell">Status/Action</div>
-            </div>
+          <div className="csr-table__main">
+            <table className="csr-table">
+              <thead>
+                <tr>
+                  <th>Item Information</th>
+                  <th>Customer</th>
+                  <th>Item</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                  <th className="last-column">Action</th>
+                </tr>
+              </thead>
 
-            <div className="table-body">
-              {orderRequests.map((order, index) => (
-                <div key={index} className="table-row">
-                  <div className="table-cell">{order.itemInfo}</div>
-                  <div className="table-cell">{order.customer}</div>
-                  <div className="table-cell">{order.item}</div>
-                  <div className="table-cell">{order.total}</div>
-                  <div className="table-cell">
-                    {order.status === "denied" && (
-                      <span className="status-badge denied">Denied</span>
-                    )}
-                    {order.status === "sent-to-teamlead" && (
-                      <span className="status-badge sent">
-                        Sent to Team Lead
-                      </span>
-                    )}
-                    {order.status === "pending" && (
-                      <button
-                        className="send-request-btn"
-                        onClick={() => handleSendRequest(order.id)}
+              <tbody>
+                {orderRequests.map((order) => (
+                  <tr key={order.id}>
+                    <td>{order.itemInfo}</td>
+                    <td>{order.customer}</td>
+                    <td>{order.item}</td>
+                    <td>{order.total}</td>
+
+                    {/* Status column */}
+                    <td>
+                      <span
+                        className={`status-badge ${
+                          order.status === "pending" ? "pending" : "denied"
+                        }`}
                       >
-                        Send to Team Lead
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))}
+                        {capitalize(order.status)}
+                      </span>
+                    </td>
+
+                    <td className="last-column">
+                      <div className="action-icons">
+                        <button
+                          type="button"
+                          className="icon-btn approved"
+                          aria-label={`Set order ${order.id} pending`}
+                          onClick={() => handleSetStatus(order.id, "pending")}
+                        >
+                          <BsCheckSquare className="action-icon approve" />
+                        </button>
+
+                        <button
+                          type="button"
+                          className="icon-btn denied"
+                          aria-label={`Set order ${order.id} denied`}
+                          onClick={() => handleSetStatus(order.id, "denied")}
+                        >
+                          <BsXSquare className="action-icon reject" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            <div className="pagination">
+              <button className="pagination-btn">
+                <span>←</span> Previous
+              </button>
+
+              <div className="page-numbers">
+                <span className="page-number">01</span>
+                <span className="page-number">02</span>
+                <span className="page-number">03</span>
+              </div>
+
+              <button className="pagination-btn">
+                Next <span>→</span>
+              </button>
             </div>
           </div>
-
-          <div className="pagination">
-            <button className="pagination-btn">
-              <span>←</span> Previous
-            </button>
-
-            <div className="page-numbers">
-              <span className="page-number">01</span>
-              <span className="page-number">02</span>
-              <span className="page-number active">03</span>
-              <span className="page-dots">...</span>
-              <span className="page-number">20</span>
-            </div>
-
-            <button className="pagination-btn">
-              Next <span>→</span>
-            </button>
-          </div>
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 };
