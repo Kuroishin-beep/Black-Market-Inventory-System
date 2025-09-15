@@ -8,11 +8,12 @@ import LoginPage from "./pages/LoginPage.jsx";
 import SignUpPage from "./pages/SignUpPage";
 import DashboardPage from "./pages/DashboardPage.jsx";
 import ProductList from "./pages/ProductListPage.jsx";
+import ProcurementPage from "./pages/ProcurementPage.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
-      <ProductList />
+      <ProcurementPage />
     </BrowserRouter>
   </StrictMode>
 );

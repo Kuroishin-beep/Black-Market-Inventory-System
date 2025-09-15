@@ -1,6 +1,10 @@
 import React, { useState } from "react";
-import Sidebar from "../components/Sidebar";
-import "../styles/Login.css";
+import Sidebar from "../components/SideBar";
+import "../styles/Procurement.css";
+import { FaUserCircle } from "react-icons/fa";
+import placeholder from "../assets/img-placeholder.png";
+import { PiPlus } from "react-icons/pi";
+import { FaMinus } from "react-icons/fa6";
 
 const ProcurementPage = ({ userRole = "procurement" }) => {
   const [formData, setFormData] = useState({
@@ -10,33 +14,81 @@ const ProcurementPage = ({ userRole = "procurement" }) => {
     quantity: "",
   });
 
+  const [counter, setCounter] = useState(1);
+
   const [products, setProducts] = useState([
     {
       id: 1,
       productName: "Lenovo ThinkBook Plus Gen 6",
       distributor: "Tech Distributors Inc",
       price: "$599.75",
-      quantity: "12,345",
-      status: "Approved",
-      dateAdded: "2025-09-01",
     },
     {
       id: 2,
       productName: "Acer Chromebook Plus Spin 514",
       distributor: "Global Tech Supply",
       price: "$599.75",
-      quantity: "23,456",
-      status: "Pending",
-      dateAdded: "2025-09-02",
     },
     {
       id: 3,
       productName: "Dell XPS 13",
       distributor: "Premium Electronics",
       price: "$599.75",
-      quantity: "13,567",
-      status: "Pending",
-      dateAdded: "2025-09-03",
+    },
+    {
+      id: 1,
+      productName: "Lenovo ThinkBook Plus Gen 6",
+      distributor: "Tech Distributors Inc",
+      price: "$599.75",
+    },
+    {
+      id: 2,
+      productName: "Acer Chromebook Plus Spin 514",
+      distributor: "Global Tech Supply",
+      price: "$599.75",
+    },
+    {
+      id: 3,
+      productName: "Dell XPS 13",
+      distributor: "Premium Electronics",
+      price: "$599.75",
+    },
+
+    {
+      id: 1,
+      productName: "Lenovo ThinkBook Plus Gen 6",
+      distributor: "Tech Distributors Inc",
+      price: "$599.75",
+    },
+    {
+      id: 2,
+      productName: "Acer Chromebook Plus Spin 514",
+      distributor: "Global Tech Supply",
+      price: "$599.75",
+    },
+    {
+      id: 3,
+      productName: "Dell XPS 13",
+      distributor: "Premium Electronics",
+      price: "$599.75",
+    },
+    {
+      id: 1,
+      productName: "Lenovo ThinkBook Plus Gen 6",
+      distributor: "Tech Distributors Inc",
+      price: "$599.75",
+    },
+    {
+      id: 2,
+      productName: "Acer Chromebook Plus Spin 514",
+      distributor: "Global Tech Supply",
+      price: "$599.75",
+    },
+    {
+      id: 3,
+      productName: "Dell XPS 13",
+      distributor: "Premium Electronics",
+      price: "$599.75",
     },
   ]);
 
@@ -97,149 +149,61 @@ const ProcurementPage = ({ userRole = "procurement" }) => {
   return (
     <div className="procurement-container">
       <Sidebar userRole={userRole} />
-      <main className="procurement-main">
+
+      <div className="procurement-content">
         <header className="procurement-header">
-          <h1>Procurement - Add Products to Inventory</h1>
-          <div className="header-actions">
-            <button
-              className="add-product-btn"
-              onClick={() => setShowForm(!showForm)}
-            >
-              <span className="add-icon">+</span>
-              Add New Product
-            </button>
-          </div>
-          <div className="user-info">
-            <div className="user-avatar">
-              <span className="user-icon">👤</span>
-            </div>
-            <div className="user-details">
-              <div className="user-name">Mark Anthony Dela Cruz</div>
-              <div className="user-id">#081203</div>
-            </div>
+          <FaUserCircle className="user-pfp" />
+          <div className="user-details">
+            <span className="user-name">Mark Anthony Dela Cruz</span>
+            <span className="user-id">#081203</span>
           </div>
         </header>
 
-        {showForm && (
-          <div className="add-product-form">
-            <div className="form-card">
-              <div className="form-header">
-                <h2>Add New Product to Inventory</h2>
-                <button
-                  className="close-btn"
-                  onClick={() => setShowForm(false)}
-                >
-                  ✕
-                </button>
-              </div>
+        <main className="procurement-main">
+          <h1 className="procurement-title">Market</h1>
+          <div className="procurement-cards">
+            {products.map((product) => (
+              <div key={product.id} className="procurement-list">
+                <img
+                  className="procurement-img"
+                  src={placeholder}
+                  alt={product.productName}
+                />
+                <p className="procurement-product-name">
+                  {product.productName}
+                </p>
+                <p className="procurement-distributor">{product.distributor}</p>
+                <p className="procurement-price">{product.price}</p>
 
-              <form onSubmit={handleSubmit} className="product-form">
-                <div className="form-row">
-                  <div className="form-group">
-                    <label className="form-label">Product Name</label>
-                    <input
-                      type="text"
-                      name="productName"
-                      value={formData.productName}
-                      onChange={handleInputChange}
-                      className="form-input"
-                      placeholder="Enter product name"
-                      required
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Distributor</label>
-                    <input
-                      type="text"
-                      name="distributor"
-                      value={formData.distributor}
-                      onChange={handleInputChange}
-                      className="form-input"
-                      placeholder="Enter distributor name"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="form-row">
-                  <div className="form-group">
-                    <label className="form-label">Price</label>
-                    <input
-                      type="number"
-                      name="price"
-                      value={formData.price}
-                      onChange={handleInputChange}
-                      className="form-input"
-                      placeholder="Enter price"
-                      step="0.01"
-                      required
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Quantity</label>
-                    <input
-                      type="number"
-                      name="quantity"
-                      value={formData.quantity}
-                      onChange={handleInputChange}
-                      className="form-input"
-                      placeholder="Enter quantity"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="form-actions">
-                  <button
-                    type="button"
-                    className="cancel-btn"
-                    onClick={() => setShowForm(false)}
-                  >
-                    Cancel
-                  </button>
-                  <button type="submit" className="submit-btn">
-                    Add to Inventory
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-
-        <div className="procurement-content">
-          <div className="products-table">
-            <div className="table-header">
-              <div className="header-cell">Product Name</div>
-              <div className="header-cell">Distributor</div>
-              <div className="header-cell">Price</div>
-              <div className="header-cell">Quantity</div>
-              <div className="header-cell">Status</div>
-              <div className="header-cell">Date Added</div>
-            </div>
-
-            <div className="table-body">
-              {products.map((product, index) => (
-                <div key={product.id} className="table-row">
-                  <div className="table-cell">{product.productName}</div>
-                  <div className="table-cell">{product.distributor}</div>
-                  <div className="table-cell">{product.price}</div>
-                  <div className="table-cell">{product.quantity}</div>
-                  <div className="table-cell">
-                    <span
-                      className={`status-badge ${getStatusClass(
-                        product.status
-                      )}`}
+                <div className="procurement-actions">
+                  <div className="procurement-actions__amount">
+                    <button
+                      onClick={() =>
+                        setCounter((prev) => (prev > 1 ? prev - 1 : 1))
+                      }
+                      className="procurement-actions__amount--minus"
                     >
-                      {product.status}
+                      <FaMinus />
+                    </button>
+
+                    <span className="procurement-actions__amount--ctr">
+                      {counter}
                     </span>
+
+                    <button
+                      onClick={() => setCounter((prev) => prev + 1)}
+                      className="procurement-actions__amount--add"
+                    >
+                      <PiPlus />
+                    </button>
                   </div>
-                  <div className="table-cell">{product.dateAdded}</div>
+                  <button className="procurement-actions__buy">Buy</button>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 };
