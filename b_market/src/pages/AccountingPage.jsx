@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import Sidebar from "../components/SideBar";
 import "../styles/Accounting.css";
+import { LuSend } from "react-icons/lu";
+import { FaUserCircle } from "react-icons/fa";
+import { CiFilter } from "react-icons/ci";
 
 const AccountingPage = ({ userRole = "accounting" }) => {
   const [billings, setBillings] = useState([
@@ -10,6 +13,7 @@ const AccountingPage = ({ userRole = "accounting" }) => {
       price: "$599.75",
       status: "Pending",
       invoiceSent: false,
+      dueDate: "2025-09-01",
     },
     {
       orderId: "#67890",
@@ -17,6 +21,7 @@ const AccountingPage = ({ userRole = "accounting" }) => {
       price: "$599.75",
       status: "Paid",
       invoiceSent: true,
+      dueDate: "2025-09-02",
     },
     {
       orderId: "#12346",
@@ -24,6 +29,7 @@ const AccountingPage = ({ userRole = "accounting" }) => {
       price: "$599.75",
       status: "Pending",
       invoiceSent: false,
+      dueDate: "2025-09-03",
     },
     {
       orderId: "#67891",
@@ -31,6 +37,7 @@ const AccountingPage = ({ userRole = "accounting" }) => {
       price: "$599.75",
       status: "Paid",
       invoiceSent: true,
+      dueDate: "2025-09-04",
     },
     {
       orderId: "#12347",
@@ -38,6 +45,7 @@ const AccountingPage = ({ userRole = "accounting" }) => {
       price: "$599.75",
       status: "Pending",
       invoiceSent: false,
+      dueDate: "2025-09-05",
     },
     {
       orderId: "#67892",
@@ -45,6 +53,7 @@ const AccountingPage = ({ userRole = "accounting" }) => {
       price: "$599.75",
       status: "Paid",
       invoiceSent: true,
+      dueDate: "2025-09-06",
     },
     {
       orderId: "#12348",
@@ -52,6 +61,7 @@ const AccountingPage = ({ userRole = "accounting" }) => {
       price: "$599.75",
       status: "Overdue",
       invoiceSent: true,
+      dueDate: "2025-09-07",
     },
     {
       orderId: "#67893",
@@ -59,6 +69,7 @@ const AccountingPage = ({ userRole = "accounting" }) => {
       price: "$599.75",
       status: "Paid",
       invoiceSent: true,
+      dueDate: "2025-09-08",
     },
     {
       orderId: "#12349",
@@ -66,6 +77,7 @@ const AccountingPage = ({ userRole = "accounting" }) => {
       price: "$599.75",
       status: "Pending",
       invoiceSent: false,
+      dueDate: "2025-09-09",
     },
     {
       orderId: "#67894",
@@ -73,6 +85,7 @@ const AccountingPage = ({ userRole = "accounting" }) => {
       price: "$599.75",
       status: "Overdue",
       invoiceSent: true,
+      dueDate: "2025-09-10",
     },
   ]);
 
@@ -115,107 +128,79 @@ const AccountingPage = ({ userRole = "accounting" }) => {
   return (
     <div className="accounting-container">
       <Sidebar userRole={userRole} />
-      <main className="accounting-main">
+      <div className="accounting-content">
         <header className="accounting-header">
-          <h1>Accounting - Billing & Invoices</h1>
-          <div className="header-actions">
-            <button className="filter-btn">
-              <span className="filter-icon">▲</span>
-              Filter
-            </button>
-          </div>
-          <div className="user-info">
-            <div className="user-avatar">
-              <span className="user-icon">👤</span>
-            </div>
-            <div className="user-details">
-              <div className="user-name">Mark Anthony Dela Cruz</div>
-              <div className="user-id">#081203</div>
-            </div>
+          <FaUserCircle className="user-pfp" />
+          <div className="user-details">
+            <span className="user-name">Mark Anthony Dela Cruz</span>
+            <span className="user-id">#081203</span>
           </div>
         </header>
 
-        <div className="accounting-content">
-          <div className="billing-table">
-            <div className="table-header">
-              <div className="header-cell">Order ID</div>
-              <div className="header-cell">Customer</div>
-              <div className="header-cell">Price</div>
-              <div className="header-cell">Status</div>
-              <div className="header-cell">Action</div>
+        <main className="accounting-main">
+          <div className="accounting-main__header">
+            <h1 className="accounting-title">Billing</h1>
+            <div className="accounting-main__header--buttons">
+              <button className="accounting-main__filter">
+                <CiFilter className="accounting-icon filter" /> Filter
+              </button>
             </div>
+          </div>
 
-            <div className="table-body">
-              {billings.map((billing, index) => (
-                <div key={index} className="table-row">
-                  <div className="table-cell">{billing.orderId}</div>
-                  <div className="table-cell">{billing.customer}</div>
-                  <div className="table-cell">{billing.price}</div>
-                  <div className="table-cell">
-                    <span
-                      className={`status-badge ${getStatusClass(
-                        billing.status
-                      )}`}
-                    >
-                      {billing.status}
-                    </span>
-                  </div>
-                  <div className="table-cell">
-                    <div className="action-dropdown">
-                      <span
-                        className="action-icon hover-trigger"
-                        title="Options"
-                      >
-                        ⚙️
+          <div className="accounting-table__main">
+            <table className="accounting-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Price</th>
+                  <th>Payment Due</th>
+                  <th>Status</th>
+                  <th className="last-column">Action</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {billings.map((bill) => (
+                  <tr key={bill.id}>
+                    <td>{bill.orderId}</td>
+                    <td>{bill.customer}</td>
+                    <td>{bill.price}</td>
+                    <td>{bill.dueDate}</td>
+                    <td>
+                      <span className={`badge ${getStatusClass(bill.status)}`}>
+                        {bill.status}
                       </span>
-                      <div className="dropdown-menu">
-                        {!billing.invoiceSent && (
-                          <button
-                            className="dropdown-item"
-                            onClick={() => handleSendInvoice(index)}
-                          >
-                            📧 Send Invoice
-                          </button>
-                        )}
-                        {billing.status !== "Paid" && (
-                          <button
-                            className="dropdown-item"
-                            onClick={() => handleMarkAsPaid(index)}
-                          >
-                            ✅ Mark as Paid
-                          </button>
-                        )}
-                        {billing.status === "Pending" && (
-                          <button
-                            className="dropdown-item"
-                            onClick={() => handleMarkAsOverdue(index)}
-                          >
-                            ⚠️ Mark as Overdue
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+                    </td>
 
-          <div className="pagination">
-            <button className="pagination-btn" disabled>
-              ◀ Previous
-            </button>
-            <div className="page-numbers">
-              <span className="page-number">01</span>
-              <span className="page-number">02</span>
-              <span className="page-number active">03</span>
-              <span className="page-dots">...</span>
-              <span className="page-number">20</span>
+                    <td>
+                      <button className="action-btn">
+                        <LuSend />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            <div className="pagination">
+              <button className="pagination-btn">
+                <span>←</span> Previous
+              </button>
+
+              <div className="page-numbers">
+                <span className="page-number">01</span>
+                <span className="page-number">02</span>
+                <span className="page-number">03</span>
+              </div>
+
+              <button className="pagination-btn">
+                Next <span>→</span>
+              </button>
             </div>
-            <button className="pagination-btn">Next ▶</button>
           </div>
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 };

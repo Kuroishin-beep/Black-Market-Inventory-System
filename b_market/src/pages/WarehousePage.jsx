@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import Sidebar from "../components/SideBar";
 import "../styles/Warehouse.css";
+import { FaUserCircle } from "react-icons/fa";
+import { CiFilter } from "react-icons/ci";
 
 const WarehousePage = ({ userRole = "warehouse" }) => {
   const [products, setProducts] = useState([
@@ -99,117 +101,92 @@ const WarehousePage = ({ userRole = "warehouse" }) => {
     );
   };
 
-  const getStatusClass = (status) => {
-    switch (status.toLowerCase()) {
-      case "good":
-        return "good";
-      case "spoiled":
-        return "spoiled";
-      case "damaged":
-        return "damaged";
-      case "pending":
-        return "pending";
-      default:
-        return "pending";
-    }
-  };
-
-  const getDropdownClass = (status) => {
-    switch (status.toLowerCase()) {
-      case "good":
-        return "status-select good";
-      case "spoiled":
-        return "status-select spoiled";
-      case "damaged":
-        return "status-select damaged";
-      case "pending":
-        return "status-select pending";
-      default:
-        return "status-select pending";
-    }
-  };
+  const productCondition = [
+    { value: "", label: "Set Condition" },
+    { value: "good", label: "Good" },
+    { value: "damaged", label: "Damaged" },
+  ];
 
   return (
     <div className="warehouse-container">
       <Sidebar userRole={userRole} />
-      <main className="warehouse-main">
+      <div className="warehouse-content">
         <header className="warehouse-header">
-          <h1>Warehouse - Product Status Management</h1>
-          <div className="header-actions">
-            <button className="filter-btn">
-              <span className="filter-icon">▲</span>
-              Filter
-            </button>
-          </div>
-          <div className="user-info">
-            <div className="user-avatar">
-              <span className="user-icon">👤</span>
-            </div>
-            <div className="user-details">
-              <div className="user-name">Mark Anthony Dela Cruz</div>
-              <div className="user-id">#081203</div>
-            </div>
+          <FaUserCircle className="user-pfp" />
+          <div className="user-details">
+            <span className="user-name">Mark Anthony Dela Cruz</span>
+            <span className="user-id">#081203</span>
           </div>
         </header>
 
-        <div className="warehouse-content">
-          <div className="status-info">
-            <p>
-              Update product status from default <strong>Pending</strong> to
-              reflect current condition:
-            </p>
-          </div>
-
-          <div className="products-table">
-            <div className="table-header">
-              <div className="header-cell">Item Information</div>
-              <div className="header-cell">Product ID</div>
-              <div className="header-cell">Stock</div>
-              <div className="header-cell">Price</div>
-              <div className="header-cell">Status</div>
-            </div>
-
-            <div className="table-body">
-              {products.map((product, index) => (
-                <div key={index} className="table-row">
-                  <div className="table-cell">{product.itemInfo}</div>
-                  <div className="table-cell">{product.productId}</div>
-                  <div className="table-cell">{product.stock}</div>
-                  <div className="table-cell">{product.price}</div>
-                  <div className="table-cell">
-                    <select
-                      className={getDropdownClass(product.status)}
-                      value={product.status}
-                      onChange={(e) =>
-                        handleStatusChange(index, e.target.value)
-                      }
-                    >
-                      <option value="Pending">Pending</option>
-                      <option value="Good">Good</option>
-                      <option value="Spoiled">Spoiled</option>
-                      <option value="Damaged">Damaged</option>
-                    </select>
-                  </div>
-                </div>
-              ))}
+        <main className="warehouse-main">
+          <div className="warehouse-main__header">
+            <h1 className="warehouse-title">Product</h1>
+            <div className="warehouse-main__header--buttons">
+              <button className="warehouse-main__filter">
+                <CiFilter className="warehouse-icon filter" /> Filter
+              </button>
             </div>
           </div>
 
-          <div className="pagination">
-            <button className="pagination-btn" disabled>
-              ◀ Previous
-            </button>
-            <div className="page-numbers">
-              <span className="page-number">01</span>
-              <span className="page-number">02</span>
-              <span className="page-number active">03</span>
-              <span className="page-dots">...</span>
-              <span className="page-number">20</span>
+          <div className="warehouse-table__main">
+            <table className="warehouse-table">
+              <thead>
+                <tr>
+                  <th>Item Information</th>
+                  <th>Product ID</th>
+                  <th>Stock</th>
+                  <th>Price</th>
+                  <th className="last-column">Action</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {products.map((product) => (
+                  <tr key={product.id}>
+                    <td>{product.itemInfo}</td>
+                    <td>{product.productId}</td>
+                    <td>{product.stock}</td>
+                    <td>{product.price}</td>
+
+                    <td>
+                      <div className="warehouse-card__input-wrapper">
+                        <select
+                          className={`warehouse-card__condition ${product.status.toLowerCase()}`}
+                          value={product.status}
+                          onChange={(e) =>
+                            handleStatusChange(product.id, e.target.value)
+                          }
+                        >
+                          <option value="">Set Condition</option>
+                          <option value="Good">Good</option>
+                          <option value="Damaged">Damaged</option>
+                        </select>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            <div className="pagination">
+              <button className="pagination-btn">
+                <span>←</span> Previous
+              </button>
+
+              <div className="page-numbers">
+                <span className="page-number">01</span>
+                <span className="page-number">02</span>
+                <span className="page-number">03</span>
+              </div>
+
+              <button className="pagination-btn">
+                Next <span>→</span>
+              </button>
             </div>
-            <button className="pagination-btn">Next ▶</button>
           </div>
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 };
