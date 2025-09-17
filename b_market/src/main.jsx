@@ -8,7 +8,7 @@ import CSRPage from "./pages/CSRPage";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
-      <CSRPage />
+      <App />
     </BrowserRouter>
   </StrictMode>
 );
