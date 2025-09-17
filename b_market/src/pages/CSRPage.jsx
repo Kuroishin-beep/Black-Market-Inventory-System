@@ -136,87 +136,42 @@ const CSRPage = () => {
         </header>
 
         <main className="csr-main">
-          <div className="csr-main__header">
-            <h1 className="csr-title">Order Requests</h1>
-            <div className="csr-main__header--buttons">
-              <button className="csr-main__filter">
-                <CiFilter className="csr-icon filter" /> Filter
-              </button>
+          <h1 className="csr-title">Order Form</h1>
+
+          <div className="csr-card">
+            <div className="form-group">
+              <label>Supplier</label>
+              <select className="form-select">
+                <option value="">Select Supplier</option>
+                <option value="supplier1">Supplier 1</option>
+                <option value="supplier2">Supplier 2</option>
+              </select>
             </div>
-          </div>
 
-          <div className="csr-table__main">
-            <table className="csr-table">
-              <thead>
-                <tr>
-                  <th>Item Information</th>
-                  <th>Customer</th>
-                  <th>Item</th>
-                  <th>Total</th>
-                  <th>Status</th>
-                  <th className="last-column">Action</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {orderRequests.map((order) => (
-                  <tr key={order.id}>
-                    <td>{order.itemInfo}</td>
-                    <td>{order.customer}</td>
-                    <td>{order.item}</td>
-                    <td>{order.total}</td>
-
-                    {/* Status column */}
-                    <td>
-                      <span
-                        className={`status-badge ${
-                          order.status === "pending" ? "pending" : "denied"
-                        }`}
-                      >
-                        {capitalize(order.status)}
-                      </span>
-                    </td>
-
-                    <td className="last-column">
-                      <div className="action-icons">
-                        <button
-                          type="button"
-                          className="icon-btn approved"
-                          aria-label={`Set order ${order.id} pending`}
-                          onClick={() => handleSetStatus(order.id, "pending")}
-                        >
-                          <BsCheckSquare className="action-icon approve" />
-                        </button>
-
-                        <button
-                          type="button"
-                          className="icon-btn denied"
-                          aria-label={`Set order ${order.id} denied`}
-                          onClick={() => handleSetStatus(order.id, "denied")}
-                        >
-                          <BsXSquare className="action-icon reject" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-
-            <div className="pagination">
-              <button className="pagination-btn">
-                <span>←</span> Previous
-              </button>
-
-              <div className="page-numbers">
-                <span className="page-number">01</span>
-                <span className="page-number">02</span>
-                <span className="page-number">03</span>
+            <div className="form-row">
+              <div className="form-group product-group">
+                <label>Product/s</label>
+                <select className="form-select">
+                  <option value="">Select Product</option>
+                  <option value="product1">Product 1</option>
+                  <option value="product2">Product 2</option>
+                </select>
               </div>
 
-              <button className="pagination-btn">
-                Next <span>→</span>
-              </button>
+              <div className="form-group qty-group">
+                <label>Qty</label>
+                <input
+                  type="number"
+                  className="form-input"
+                  placeholder="e.g. 1458"
+                />
+              </div>
+            </div>
+
+            <button className="add-btn">+ Add More Product</button>
+
+            <div className="form-submit">
+              <button className="submit-btn">Submit</button>
             </div>
           </div>
         </main>

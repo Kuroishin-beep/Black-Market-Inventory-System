@@ -160,47 +160,43 @@ const ProcurementPage = ({ userRole = "procurement" }) => {
         </header>
 
         <main className="procurement-main">
-          <h1 className="procurement-title">Market</h1>
-          <div className="procurement-cards">
-            {products.map((product) => (
-              <div key={product.id} className="procurement-list">
-                <img
-                  className="procurement-img"
-                  src={placeholder}
-                  alt={product.productName}
-                />
-                <p className="procurement-product-name">
-                  {product.productName}
-                </p>
-                <p className="procurement-distributor">{product.distributor}</p>
-                <p className="procurement-price">{product.price}</p>
+          <h1 className="procurement-title">Procurement Form</h1>
 
-                <div className="procurement-actions">
-                  <div className="procurement-actions__amount">
-                    <button
-                      onClick={() =>
-                        setCounter((prev) => (prev > 1 ? prev - 1 : 1))
-                      }
-                      className="procurement-actions__amount--minus"
-                    >
-                      <FaMinus />
-                    </button>
+          <div className="procurement-card">
+            <div className="form-group">
+              <label>Supplier</label>
+              <select className="form-select">
+                <option value="">Select Supplier</option>
+                <option value="supplier1">Supplier 1</option>
+                <option value="supplier2">Supplier 2</option>
+              </select>
+            </div>
 
-                    <span className="procurement-actions__amount--ctr">
-                      {counter}
-                    </span>
-
-                    <button
-                      onClick={() => setCounter((prev) => prev + 1)}
-                      className="procurement-actions__amount--add"
-                    >
-                      <PiPlus />
-                    </button>
-                  </div>
-                  <button className="procurement-actions__buy">Buy</button>
-                </div>
+            <div className="form-row">
+              <div className="form-group product-group">
+                <label>Product/s</label>
+                <select className="form-select">
+                  <option value="">Select Product</option>
+                  <option value="product1">Product 1</option>
+                  <option value="product2">Product 2</option>
+                </select>
               </div>
-            ))}
+
+              <div className="form-group qty-group">
+                <label>Qty</label>
+                <input
+                  type="number"
+                  className="form-input"
+                  placeholder="e.g. 1458"
+                />
+              </div>
+            </div>
+
+            <button className="add-btn">+ Add More Product</button>
+
+            <div className="form-submit">
+              <button className="submit-btn">Submit</button>
+            </div>
           </div>
         </main>
       </div>
