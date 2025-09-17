@@ -1,47 +1,69 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../supabaseClient"; // import your supabase client
 import "../styles/Login.css";
 import "../styles/Shared.css";
 import logo from "../assets/logo.png";
 import { HiQuestionMarkCircle } from "react-icons/hi2";
-import { FaUser } from "react-icons/fa6";
+import { FaUser  } from "react-icons/fa6";
 import { MdLock } from "react-icons/md";
 import { IoEye } from "react-icons/io5";
 import { IoEyeOff } from "react-icons/io5";
 
-const LoginPage = ({ setUser }) => {
+const LoginPage = ({ setUser  }) => {
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-
+  // Add state for form data and error
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
+  const [errorMsg, setErrorMsg] = useState(null);
+  const [loading, setLoading] = useState(false);
 
+  // Update formData on input change
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  // Handle form submit with Supabase login
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log("Login attempt:", formData);
+    setErrorMsg(null);
+    setLoading(true);
 
-    // For demo purposes, set a fake role based on email
-    // In real app, this would come from authentication response
-    let role = "csr"; // default
-    if (formData.email.includes("teamlead")) role = "teamlead";
-    else if (formData.email.includes("procurement")) role = "procurement";
-    else if (formData.email.includes("warehouse")) role = "warehouse";
-    else if (formData.email.includes("accounting")) role = "accounting";
+    const { email, password } = formData;
 
-    setUser({ role });
+    if (!email || !password) {
+      setErrorMsg("Please enter both email and password.");
+      setLoading(false);
+      return;
+    }
 
-    // After successful login, redirect to dashboard
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      setErrorMsg(error.message);
+      setLoading(false);
+      return;
+    }
+
+    // Fetch user role from your 'users' table
+    const { data: userData, error: userError } = await supabase
+      .from("users")
+      .select("role")
+      .eq("id", data.user.id)
+      .single();
+
+    if (userError) {
+      setErrorMsg("Failed to fetch user role.");
+      setLoading(false);
+      return;
+    }
+
+    setUser ({ id: data.user.id, email: data.user.email, role: userData.role });
+    setLoading(false);
     navigate("/dashboard");
   };
 
@@ -80,14 +102,20 @@ const LoginPage = ({ setUser }) => {
             updated—anytime, anywhere.
           </p>
 
-          <form action="">
+          {/* Add onSubmit handler here */}
+          <form onSubmit={handleSubmit}>
             <div className="login-card__form">
               <div className="login-card__input-wrapper">
-                <FaUser className="login-card__icon" />
+                <FaUser  className="login-card__icon" />
+                {/* Add name, value, onChange */}
                 <input
                   type="text"
+                  name="email"
                   placeholder="Email or Staff ID"
                   className="login-card__form--email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
                 />
               </div>
             </div>
@@ -95,10 +123,15 @@ const LoginPage = ({ setUser }) => {
             <div className="login-card__form">
               <div className="login-card__input-wrapper">
                 <MdLock className="login-card__icon" />
+                {/* Add name, value, onChange */}
                 <input
                   type={showPassword ? "text" : "password"}
+                  name="password"
                   placeholder="Password"
                   className="login-card__form--password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
                 />
                 <button
                   type="button"
@@ -110,13 +143,31 @@ const LoginPage = ({ setUser }) => {
               </div>
             </div>
 
-            <button className="login-card__form--login">Login</button>
+            {/* Show error message if any */}
+            {errorMsg && (
+              <p style={{ color: "red", marginTop: "10px" }}>{errorMsg}</p>
+            )}
+
+            {/* Add disabled and loading text */}
+            <button
+              type="submit"
+              className="login-card__form--login"
+              disabled={loading}
+            >
+              {loading ? "Logging in..." : "Login"}
+            </button>
 
             <p className="login-card__form--footer">
               Don't have an account yet?
             </p>
 
-            <button className="login-card__form--signup">Signup</button>
+            <button
+              type="button"
+              className="login-card__form--signup"
+              onClick={handleSignUpRedirect}
+            >
+              Signup
+            </button>
           </form>
         </div>
       </div>
