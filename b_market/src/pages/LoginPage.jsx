@@ -44,27 +44,52 @@ const LoginPage = ({ setUser  }) => {
     });
 
     if (error) {
+      // Check for unconfirmed email error
+      if (error.message && error.message.toLowerCase().includes("email not confirmed")) {
+        setErrorMsg("Your email is not confirmed. Please check your inbox for a confirmation email. If you did not receive it, click below to resend.");
+        setLoading(false);
+        return;
+      }
       setErrorMsg(error.message);
       setLoading(false);
       return;
     }
 
-    // Fetch user role from your 'users' table
-    const { data: userData, error: userError } = await supabase
-      .from("users")
-      .select("role")
+    // If user is returned but not confirmed, block login
+    if (data.user && data.user.confirmed_at === null) {
+      setErrorMsg("Your email is not confirmed. Please check your inbox for a confirmation email. If you did not receive it, click below to resend.");
+      setLoading(false);
+      return;
+    }
+
+    // Fetch user role from your 'employees' table (not users)
+    const { data: empData, error: empError } = await supabase
+      .from("employees")
+      .select("role_id")
       .eq("id", data.user.id)
       .single();
 
-    if (userError) {
+    if (empError) {
       setErrorMsg("Failed to fetch user role.");
       setLoading(false);
       return;
     }
 
-    setUser ({ id: data.user.id, email: data.user.email, role: userData.role });
+    setUser ({ id: data.user.id, email: data.user.email, role: empData.role_id });
     setLoading(false);
     navigate("/dashboard");
+  // Resend confirmation email
+  const handleResendConfirmation = async () => {
+    setErrorMsg(null);
+    setLoading(true);
+    const { error } = await supabase.auth.resend({ type: 'signup', email: formData.email });
+    if (error) {
+      setErrorMsg("Failed to resend confirmation email. " + error.message);
+    } else {
+      setErrorMsg("Confirmation email resent. Please check your inbox.");
+    }
+    setLoading(false);
+  };
   };
 
   const handleSignUpRedirect = () => {
@@ -145,7 +170,19 @@ const LoginPage = ({ setUser  }) => {
 
             {/* Show error message if any */}
             {errorMsg && (
-              <p style={{ color: "red", marginTop: "10px" }}>{errorMsg}</p>
+              <>
+                <p style={{ color: "red", marginTop: "10px" }}>{errorMsg}</p>
+                {errorMsg.toLowerCase().includes("not confirmed") && (
+                  <button
+                    type="button"
+                    style={{ marginTop: "10px", color: "#333", background: "#ffe", border: "1px solid #ccc", borderRadius: 4, padding: "6px 12px", cursor: "pointer" }}
+                    onClick={handleResendConfirmation}
+                    disabled={loading}
+                  >
+                    Resend Confirmation Email
+                  </button>
+                )}
+              </>
             )}
 
             {/* Add disabled and loading text */}

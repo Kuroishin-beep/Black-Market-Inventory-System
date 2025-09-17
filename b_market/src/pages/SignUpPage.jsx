@@ -44,8 +44,8 @@ const SignUpPage = ({ setUser }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrorMsg(null); // Clear previous errors
-    setLoading(true); // Set loading state
+    setErrorMsg(null);
+    setLoading(true);
 
     const { email, fullName, password, position } = formData;
 
@@ -62,7 +62,8 @@ const SignUpPage = ({ setUser }) => {
         password,
         options: {
           data: {
-            full_name: fullName, // Store full name in user metadata
+            full_name: fullName,
+            role: position, // still useful for metadata
           },
         },
       });
@@ -73,44 +74,89 @@ const SignUpPage = ({ setUser }) => {
         return;
       }
 
-      // If signup is successful, insert user details and role into your 'users' table
       if (authData.user) {
-        const { error: userInsertError } = await supabase
-          .from("users")
-          .insert([
-            {
-              id: authData.user.id, // Link to Supabase Auth user ID
-              email: authData.user.email,
-              full_name: fullName,
-              role: position,
-            },
-          ]);
+        // 2. Look up role_id from roles table
+        const { data: roleData, error: roleError } = await supabase
+          .from("roles")
+          .select("id")
+          .eq("role", position)
+          .single();
+        console.log("roleData:", roleData, "roleError:", roleError);
 
-        if (userInsertError) {
-          // If user insertion fails, you might want to handle this (e.g., delete the auth user)
-          console.error("Error inserting user into 'users' table:", userInsertError);
-          setErrorMsg("Account created, but failed to save user role. Please contact support.");
+        if (roleError || !roleData) {
+          setErrorMsg("Invalid role selected.");
           setLoading(false);
           return;
         }
 
-        // Set user state and navigate to dashboard
+        const roleId = roleData.id;
+
+        // 3. Check if employee already exists
+        const { data: existingEmp, error: existingEmpError } = await supabase
+          .from("employees")
+          .select("id")
+          .eq("id", authData.user.id)
+          .single();
+        if (existingEmp && existingEmp.id) {
+          // Employee already exists, proceed to dashboard
+          setUser({
+            id: authData.user.id,
+            email: authData.user.email,
+            fullName: fullName,
+            roleId,
+          });
+          navigate("/dashboard");
+          setLoading(false);
+          return;
+        }
+
+        // 4. Insert into employees table if not exists
+        const { data: empData, error: empError } = await supabase.from("employees").insert([
+          {
+            id: authData.user.id, // same UUID as auth.users
+            email: email,
+            full_name: fullName,
+            role_id: roleId,
+          },
+        ]);
+        console.log("empData:", empData, "empError:", empError);
+
+        if (empError) {
+          // If duplicate key error, treat as success
+          if (empError.code === '23505' || (empError.message && empError.message.includes('duplicate key'))) {
+            setUser({
+              id: authData.user.id,
+              email: authData.user.email,
+              fullName: fullName,
+              roleId,
+            });
+            navigate("/dashboard");
+            setLoading(false);
+            return;
+          } else {
+            console.error("Error inserting employee:", empError);
+            setErrorMsg("Account created, but failed to save employee record. " + (empError.message || ""));
+            setLoading(false);
+            return;
+          }
+        }
+
+        // 5. Set user state and go to dashboard
         setUser({
           id: authData.user.id,
           email: authData.user.email,
           fullName: fullName,
-          role: position,
+          roleId,
         });
         navigate("/dashboard");
       } else {
-        // This case might happen if email confirmation is required and no session is returned immediately
         setErrorMsg("Please check your email to confirm your account.");
       }
     } catch (error) {
       console.error("Unexpected error during signup:", error);
       setErrorMsg("An unexpected error occurred. Please try again.");
     } finally {
-      setLoading(false); // Always reset loading state
+      setLoading(false);
     }
   };
 
