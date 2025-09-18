@@ -165,7 +165,7 @@ const DashboardPage = () => {
         <header className="dashboard-header">
           <FaUserCircle className="user-pfp" />
           <div className="user-details">
-            <span className="user-name">{user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || "User"}</span>
+          <span className="user-name">{user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || "User"}</span>
             <span className="user-id">{user?.id?.substring(0, 8)}</span>
             <span className="user-role" style={{ fontSize: 12, color: "#666" }}>
               Role: {userRole}
