@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient"; // import your supabase client
 import "../styles/Login.css";
@@ -10,21 +10,29 @@ import { MdLock } from "react-icons/md";
 import { IoEye } from "react-icons/io5";
 import { IoEyeOff } from "react-icons/io5";
 
-const LoginPage = ({ setUser  }) => {
+const LoginPage = ({ setUser }) => {
   const navigate = useNavigate();
 
-  // Add state for form data and error
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Update formData on input change
+  // ✅ Redirect if already logged in
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        navigate("/dashboard");
+      }
+    };
+    checkSession();
+  }, [navigate]);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Handle form submit with Supabase login
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg(null);
@@ -44,7 +52,6 @@ const LoginPage = ({ setUser  }) => {
     });
 
     if (error) {
-      // Check for unconfirmed email error
       if (error.message && error.message.toLowerCase().includes("email not confirmed")) {
         setErrorMsg("Your email is not confirmed. Please check your inbox for a confirmation email. If you did not receive it, click below to resend.");
         setLoading(false);
@@ -55,14 +62,12 @@ const LoginPage = ({ setUser  }) => {
       return;
     }
 
-    // If user is returned but not confirmed, block login
     if (data.user && data.user.confirmed_at === null) {
       setErrorMsg("Your email is not confirmed. Please check your inbox for a confirmation email. If you did not receive it, click below to resend.");
       setLoading(false);
       return;
     }
 
-    // Fetch user role from your 'employees' table (not users)
     const { data: empData, error: empError } = await supabase
       .from("employees")
       .select("role_id")
@@ -75,21 +80,21 @@ const LoginPage = ({ setUser  }) => {
       return;
     }
 
-    setUser ({ id: data.user.id, email: data.user.email, role: empData.role_id });
+    setUser({ id: data.user.id, email: data.user.email, role: empData.role_id });
     setLoading(false);
     navigate("/dashboard");
-  // Resend confirmation email
+  };
+
   const handleResendConfirmation = async () => {
     setErrorMsg(null);
     setLoading(true);
-    const { error } = await supabase.auth.resend({ type: 'signup', email: formData.email });
+    const { error } = await supabase.auth.resend({ type: "signup", email: formData.email });
     if (error) {
       setErrorMsg("Failed to resend confirmation email. " + error.message);
     } else {
       setErrorMsg("Confirmation email resent. Please check your inbox.");
     }
     setLoading(false);
-  };
   };
 
   const handleSignUpRedirect = () => {
