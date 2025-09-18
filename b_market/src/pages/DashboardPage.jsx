@@ -22,37 +22,54 @@ const DashboardPage = () => {
 
   // Fetch authenticated user and role
   useEffect(() => {
-    const fetchUser  = async () => {
+    const fetchUserRole = async () => {
       const {
         data: { user },
         error,
-      } = await supabase.auth.getUser ();
-
+      } = await supabase.auth.getUser();
+  
       if (error || !user) {
-        setError("User  not authenticated.");
+        setError("User not authenticated.");
         setLoading(false);
         return;
       }
-
-      setUser (user);
-
-      // Assuming you have a profile or users table with roles
-      const { data: profileData, error: profileError } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", user.id)
-        .single();
-
-      if (profileError) {
-        setUserRole("csr"); // default role fallback
-      } else {
-        setUserRole(profileData?.role || "csr");
+  
+      setUser(user);
+  
+      try {
+        // Fetch employee with role from roles table
+        const { data: employeeData, error: empError } = await supabase
+          .from("employees")
+          .select(`
+            id,
+            full_name,
+            email,
+            role_id,
+            roles:roles(id, role, label)
+          `)
+          .eq("id", user.id)
+          .single();
+  
+        if (empError || !employeeData) {
+          console.warn("Employee record not found, fallback to metadata role");
+          // fallback to role stored in user metadata if available
+          const metadataRole = user.user_metadata?.role;
+          setUserRole(metadataRole || "warehouse"); // final fallback
+        } else {
+          setUserRole(employeeData.roles.role); // proper role from DB
+        }
+      } catch (err) {
+        console.error("Error fetching employee role:", err);
+        const metadataRole = user.user_metadata?.role;
+        setUserRole(metadataRole || "warehouse"); // fallback
+      } finally {
+        setLoading(false);
       }
     };
-
-    fetchUser ();
+  
+    fetchUserRole();
   }, []);
-
+  
   // Fetch dashboard data
   useEffect(() => {
     if (!user) return;
