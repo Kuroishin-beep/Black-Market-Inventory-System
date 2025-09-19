@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import "../styles/Landing.css";
 import "../styles/Shared.css";
 import logo from "../assets/logo.png";
-import { HiQuestionMarkCircle } from "react-icons/hi2";
 
 const LandingPage = () => {
   const navigate = useNavigate();

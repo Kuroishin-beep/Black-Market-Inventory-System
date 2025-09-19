@@ -4,7 +4,6 @@ import { supabase } from "../supabaseClient"; // import your supabase client
 import "../styles/Login.css";
 import "../styles/Shared.css";
 import logo from "../assets/logo.png";
-import { HiQuestionMarkCircle } from "react-icons/hi2";
 import { FaUser } from "react-icons/fa6";
 import { MdLock } from "react-icons/md";
 import { IoEye } from "react-icons/io5";
@@ -129,9 +128,6 @@ const LoginPage = ({ setUser }) => {
         </div>
 
         <div className="login-header__button">
-          <button className="login-header__button--query">
-            <HiQuestionMarkCircle />
-          </button>
           <button
             className="login-header__button--signup"
             onClick={handleSignUpRedirect}
