@@ -132,12 +132,10 @@ const OrdersPage = () => {
 
   const getPaymentStatusClass = (status) => {
     switch (status.toLowerCase()) {
-      case "paid":
-        return "paid";
       case "pending":
         return "pending";
-      case "overdue":
-        return "overdue";
+      case "invoiced":
+        return "invoiced";
       default:
         return "pending";
     }

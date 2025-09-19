@@ -15,7 +15,9 @@ const ProductListPage = () => {
   const [userRole, setUserRole] = useState(null);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [loadingUserRole, setLoadingUserRole] = useState(true);
+  const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   // --- Fetch authenticated user and their role ---
   useEffect(() => {
@@ -28,13 +30,11 @@ const ProductListPage = () => {
 
         if (error || !user) {
           setError("User not authenticated.");
-          setLoadingUserRole(false);
           return;
         }
 
         setUser(user);
 
-        // Fetch employee from employees table
         const { data: employeeData, error: empError } = await supabase
           .from("employees")
           .select(
@@ -46,16 +46,11 @@ const ProductListPage = () => {
             roles:roles(id, role, label)
           `
           )
-          .eq("auth_user_id", user.id) // ✅ safer if your employees table uses auth_user_id
+          .eq("auth_user_id", user.id)
           .single();
 
         if (empError || !employeeData) {
           const metadataRole = user.user_metadata?.role;
-          if (!metadataRole) {
-            console.warn(
-              "Employee record not found and no metadata role found. Falling back to default 'warehouse'."
-            );
-          }
           setUserRole(metadataRole || "warehouse");
         } else {
           setUserRole(employeeData.roles.role);
@@ -64,58 +59,80 @@ const ProductListPage = () => {
         console.error("Error fetching employee role:", err);
         const metadataRole = user?.user_metadata?.role;
         setUserRole(metadataRole || "warehouse");
-      } finally {
-        setLoadingUserRole(false);
       }
     };
 
     fetchUserRole();
   }, []);
 
-  // Fetch products from Supabase
+  // --- Fetch products with pagination ---
   useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from("items")
-        .select("id, product_name, price, stock");
-
-      if (error) {
-        console.error("Error fetching products:", error.message);
-      } else {
-        setProducts(data);
-      }
-      setLoading(false);
-    };
-
     fetchProducts();
-  }, []);
+  }, [currentPage]);
 
-  const isLoading = loadingUserRole || loading;
+  const fetchProducts = async () => {
+    setLoading(true);
+    setError(null);
 
-  if (isLoading) {
-    return (
-      <div className="product-container">
-        <Sidebar userRole={userRole} />
-        <div className="product-content">
-          <div className="loader-wrapper">
-            <YellowAnimatedLoader />
-          </div>
-        </div>
-      </div>
-    );
-  }
+    const from = (currentPage - 1) * itemsPerPage;
+    const to = from + itemsPerPage - 1;
+
+    const { data, error } = await supabase
+      .from("items")
+      .select(
+        `
+        id,
+        name,
+        brand,
+        model,
+        price,
+        stock_qty,
+        category,
+        created_at
+      `
+      )
+      .order("created_at", { ascending: false })
+      .range(from, to);
+
+    if (error) {
+      console.error("Error fetching products:", error);
+      setError("Failed to fetch products.");
+    } else {
+      setProducts(data || []);
+    }
+    setLoading(false);
+  };
 
   // ✅ Navigate to procurement page
   const handleAddNewProduct = () => {
     navigate("/procurement");
   };
 
+  const handlePreviousPage = () => {
+    setCurrentPage((prev) => Math.max(1, prev - 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((prev) => prev + 1);
+  };
+
+  if (loading) {
+    return (
+      <div className="product-container">
+        <Sidebar userRole={userRole} />
+        <div className="loader-wrapper">
+          <YellowAnimatedLoader />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="product-container">
       <Sidebar userRole={userRole} />
 
       <div className="product-content">
+        {/* Header */}
         <header className="product-header">
           <FaUserCircle className="user-pfp" />
           <div className="user-details">
@@ -132,10 +149,10 @@ const ProductListPage = () => {
           </div>
         </header>
 
+        {/* Main Content */}
         <main className="product-main">
           <div className="product-main__header">
-            <h1 className="product-title">Product</h1>
-
+            <h1 className="product-title">Products</h1>
             <div className="product-main__header--buttons">
               <button className="product-main__filter">
                 <CiFilter className="product-icon filter" />
@@ -151,54 +168,64 @@ const ProductListPage = () => {
             </div>
           </div>
 
+          {error && (
+            <p style={{ color: "red", textAlign: "center" }}>{error}</p>
+          )}
+
+          {/* Products Table */}
           <div className="product-table__main">
-            <div className="products-table">
-              <div className="table-header">
-                <div className="header-cell">Product Name</div>
-                <div className="header-cell">Product ID</div>
-                <div className="header-cell">Price</div>
-                <div className="header-cell">Stock</div>
-              </div>
-
-              <div className="table-body">
-                {loading ? (
-                  <div className="table-row">
-                    <div className="table-cell" colSpan="4">
-                      Loading products...
-                    </div>
-                  </div>
-                ) : products.length > 0 ? (
-                  products.map((product, index) => (
-                    <div key={index} className="table-row">
-                      <div className="table-cell">{product.product_name}</div>
-                      <div className="table-cell">{product.id}</div>
-                      <div className="table-cell">${product.price}</div>
-                      <div className="table-cell">{product.stock}</div>
-                    </div>
-                  ))
+            <table className="products-table">
+              <thead>
+                <tr>
+                  <th>Product Name</th>
+                  <th>Product ID</th>
+                  <th>Brand</th>
+                  <th>Model</th>
+                  <th>Category</th>
+                  <th>Price</th>
+                  <th>Stock</th>
+                </tr>
+              </thead>
+              <tbody>
+                {products.length === 0 ? (
+                  <tr>
+                    <td colSpan="7" style={{ textAlign: "center" }}>
+                      No products found.
+                    </td>
+                  </tr>
                 ) : (
-                  <div className="table-row">
-                    <div className="table-cell" colSpan="4">
-                      No products found
-                    </div>
-                  </div>
+                  products.map((product) => (
+                    <tr key={product.id}>
+                      <td>{product.name}</td>
+                      <td>{product.id}</td>
+                      <td>{product.brand || "N/A"}</td>
+                      <td>{product.model || "N/A"}</td>
+                      <td>{product.category || "N/A"}</td>
+                      <td>${parseFloat(product.price).toFixed(2)}</td>
+                      <td>{product.stock_qty ?? 0}</td>
+                    </tr>
+                  ))
                 )}
-              </div>
-            </div>
+              </tbody>
+            </table>
 
-            {/* ✅ Pagination placeholder */}
+            {/* Pagination */}
             <div className="pagination">
-              <button className="pagination-btn">
+              <button
+                className="pagination-btn"
+                onClick={handlePreviousPage}
+                disabled={currentPage === 1}
+              >
                 <span>←</span> Previous
               </button>
 
               <div className="page-numbers">
-                <span className="page-number">01</span>
-                <span className="page-number">02</span>
-                <span className="page-number">03</span>
+                <span className="page-number">
+                  {String(currentPage).padStart(2, "0")}
+                </span>
               </div>
 
-              <button className="pagination-btn">
+              <button className="pagination-btn" onClick={handleNextPage}>
                 Next <span>→</span>
               </button>
             </div>
