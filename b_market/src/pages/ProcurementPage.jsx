@@ -17,7 +17,7 @@ const ProcurementPage = () => {
     created_by: "",
   });
 
-  // --- Fetch authenticated user & role ---
+  // fetch authenticated user & role
   useEffect(() => {
     const fetchUserAndRole = async () => {
       try {
@@ -57,7 +57,7 @@ const ProcurementPage = () => {
     fetchUserAndRole();
   }, []);
 
-  // --- Fetch all purchases ---
+  // Fetch all purchases
   const fetchPurchases = async () => {
     const { data, error } = await supabase
       .from("purchases")
@@ -72,7 +72,7 @@ const ProcurementPage = () => {
     else setPurchases(data || []);
   };
 
-  // --- Fetch suppliers & items for dropdowns ---
+  // Fetch suppliers & items for dropdowns
   const fetchOptions = async () => {
     const { data: suppliersData } = await supabase
       .from("suppliers")
@@ -85,7 +85,7 @@ const ProcurementPage = () => {
     setItems(itemsData || []);
   };
 
-  // --- CREATE ---
+  // CREATE
   const createPurchase = async (e) => {
     e.preventDefault();
 
@@ -123,7 +123,7 @@ const ProcurementPage = () => {
     }
   };
 
-  // --- UPDATE (Approve & move to warehouse) ---
+  // UPDATE (Approve & move to warehouse)
   const moveToWarehouse = async (id) => {
     const { error } = await supabase
       .from("purchases")
@@ -134,7 +134,7 @@ const ProcurementPage = () => {
     else fetchPurchases();
   };
 
-  // --- DELETE ---
+  // DELETE 
   const deletePurchase = async (id) => {
     if (!window.confirm("Are you sure you want to delete this purchase?")) return;
 

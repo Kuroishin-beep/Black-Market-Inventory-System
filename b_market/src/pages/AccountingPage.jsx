@@ -89,7 +89,7 @@ const AccountingPage = ({ user }) => {
     }
   };
 
-  // ✅ Filter billings based on selected filter
+  // Filter billings based on selected filter
   const filteredBillings = billings.filter((bill) => {
     if (filter === "pending") return bill.payment_status === "pending";
     if (filter === "invoiced") return bill.payment_status === "invoiced";
@@ -130,7 +130,7 @@ const AccountingPage = ({ user }) => {
             </div>
           </div>
 
-          {/* ✅ Table */}
+          {/*Table */}
           <div className="accounting-table__main">
             <table className="accounting-table">
               <thead>
