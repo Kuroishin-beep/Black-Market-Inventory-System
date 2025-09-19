@@ -1,0 +1,33 @@
+import { vi } from 'vitest'
+
+// Mock Material-UI components to avoid styling issues in tests
+vi.mock('@mui/material', () => ({
+  Button: ({ children, ...props }) => <button {...props}>{children}</button>,
+  TextField: ({ label, ...props }) => <input placeholder={label} {...props} />,
+  Box: ({ children, ...props }) => <div {...props}>{children}</div>,
+  Typography: ({ children, ...props }) => <div {...props}>{children}</div>,
+  Container: ({ children, ...props }) => <div {...props}>{children}</div>,
+  Grid: ({ children, ...props }) => <div {...props}>{children}</div>,
+  Paper: ({ children, ...props }) => <div {...props}>{children}</div>,
+  Card: ({ children, ...props }) => <div {...props}>{children}</div>,
+  CardContent: ({ children, ...props }) => <div {...props}>{children}</div>,
+  CardActions: ({ children, ...props }) => <div {...props}>{children}</div>,
+  AppBar: ({ children, ...props }) => <div {...props}>{children}</div>,
+  Toolbar: ({ children, ...props }) => <div {...props}>{children}</div>,
+  IconButton: ({ children, ...props }) => <button {...props}>{children}</button>,
+  Menu: ({ children, ...props }) => <div {...props}>{children}</div>,
+  MenuItem: ({ children, ...props }) => <div {...props}>{children}</div>,
+  Dialog: ({ children, ...props }) => <div {...props}>{children}</div>,
+  DialogTitle: ({ children, ...props }) => <div {...props}>{children}</div>,
+  DialogContent: ({ children, ...props }) => <div {...props}>{children}</div>,
+  DialogActions: ({ children, ...props }) => <div {...props}>{children}</div>,
+  Table: ({ children, ...props }) => <table {...props}>{children}</table>,
+  TableHead: ({ children, ...props }) => <thead {...props}>{children}</thead>,
+  TableBody: ({ children, ...props }) => <tbody {...props}>{children}</tbody>,
+  TableRow: ({ children, ...props }) => <tr {...props}>{children}</tr>,
+  TableCell: ({ children, ...props }) => <td {...props}>{children}</td>,
+  FormControl: ({ children, ...props }) => <div {...props}>{children}</div>,
+  InputLabel: ({ children, ...props }) => <label {...props}>{children}</label>,
+  Select: ({ children, ...props }) => <select {...props}>{children}</select>,
+  Option: ({ children, ...props }) => <option {...props}>{children}</option>,
+}))
