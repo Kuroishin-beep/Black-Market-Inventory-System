@@ -7,7 +7,7 @@ import { CiFilter } from "react-icons/ci";
 import { supabase } from "../supabaseClient";
 
 const OrdersPage = () => {
-  const [userRole, setUserRole] = useState("teamlead"); 
+  const [userRole, setUserRole] = useState("teamlead");
   const [salesOrders, setSalesOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -28,7 +28,8 @@ const OrdersPage = () => {
 
     const { data, error } = await supabase
       .from("sales")
-      .select(`
+      .select(
+        `
         id,
         qty,
         total,
@@ -40,7 +41,8 @@ const OrdersPage = () => {
         csr:employees!sales_csr_id_fkey (full_name, email),
         teamlead:employees!sales_teamlead_id_fkey (full_name, email),
         accounting:employees!sales_accounting_id_fkey (full_name, email)
-      `)
+      `
+      )
       .order("created_at", { ascending: false })
       .range(from, to);
 
@@ -129,7 +131,9 @@ const OrdersPage = () => {
             </div>
           </div>
 
-          {error && <p style={{ color: "red", textAlign: "center" }}>{error}</p>}
+          {error && (
+            <p style={{ color: "red", textAlign: "center" }}>{error}</p>
+          )}
 
           {/* Orders Table */}
           <div className="orders-table__main">
@@ -180,7 +184,7 @@ const OrdersPage = () => {
                         >
                           {order.status}
                         </span>
-                        <select
+                        {/* <select
                           value={order.status}
                           onChange={(e) =>
                             handlePaymentStatusChange(order.id, e.target.value)
@@ -195,7 +199,7 @@ const OrdersPage = () => {
                           <option value="approved">Approved</option>
                           <option value="invoiced">Invoiced</option>
                           <option value="completed">Completed</option>
-                        </select>
+                        </select> */}
                       </td>
                     </tr>
                   ))

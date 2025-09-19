@@ -196,7 +196,7 @@ const DashboardPage = () => {
                 user?.email ||
                 "User"}
             </span>
-            <span className="user-id">{user?.id?.substring(0, 8)}</span>
+
             <span className="user-role" style={{ fontSize: 12, color: "#666" }}>
               Role: {userRole}
             </span>

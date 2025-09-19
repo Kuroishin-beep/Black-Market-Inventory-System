@@ -79,7 +79,7 @@ const Sidebar = ({ userRole }) => {
       path: "/dashboard",
     },
     {
-      name: "Items",
+      name: "Product List",
       iconIdle: <IoPricetagOutline />,
       iconActive: <IoPricetag />,
       path: "/products",
@@ -88,7 +88,7 @@ const Sidebar = ({ userRole }) => {
       name: "Shopping Cart",
       iconIdle: <PiShoppingCartLight />,
       iconActive: <PiShoppingCartFill />,
-      path: "/cart",
+      path: "/orders",
     },
     ...(roleButton ? [roleButton] : []),
   ];

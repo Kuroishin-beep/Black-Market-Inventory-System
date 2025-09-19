@@ -19,7 +19,8 @@ const TeamLeaderPage = ({ userRole = "teamlead" }) => {
       setLoading(true);
       const { data, error } = await supabase
         .from("sales")
-        .select(`
+        .select(
+          `
           id,
           qty,
           total,
@@ -29,7 +30,8 @@ const TeamLeaderPage = ({ userRole = "teamlead" }) => {
           customers:customer_id (company_name),
           items:item_id (name, model),
           distributors:distributor_id (name)
-        `)
+        `
+        )
         .eq("status", "pending")
         .eq("stage", "csr")
         .is("teamlead_id", null)
@@ -105,7 +107,7 @@ const TeamLeaderPage = ({ userRole = "teamlead" }) => {
         .from("sales")
         .update({
           status: "approved",
-          stage: "procurement",
+          stage: "sales",
           teamlead_id: user.id, // employee.id
         })
         .eq("id", id);
@@ -143,12 +145,18 @@ const TeamLeaderPage = ({ userRole = "teamlead" }) => {
     <div className="team-container">
       <Sidebar userRole={userRole} />
       <div className="team-content">
-        <header className="team-header">
+        <header className="dashboard-header">
           <FaUserCircle className="user-pfp" />
           <div className="user-details">
-            <span className="user-name">{user?.email || "User"}</span>
-            <span className="user-id">
-              {user?.id?.substring(0, 8) || "--------"}
+            <span className="user-name">
+              {user?.user_metadata?.full_name ||
+                user?.user_metadata?.name ||
+                user?.email ||
+                "User"}
+            </span>
+
+            <span className="user-role" style={{ fontSize: 12, color: "#666" }}>
+              Role: {userRole}
             </span>
           </div>
         </header>
@@ -212,7 +220,10 @@ const TeamLeaderPage = ({ userRole = "teamlead" }) => {
                             type="button"
                             className="icon-btn approved"
                             aria-label={`Approve order ${order.id}`}
-                            onClick={() => handleApprove(order.id)}
+                            onClick={() => {
+                              handleApprove(order.id);
+                              console.log("approved");
+                            }}
                           >
                             <BsCheckSquare className="action-icon approve" />
                           </button>
@@ -220,7 +231,10 @@ const TeamLeaderPage = ({ userRole = "teamlead" }) => {
                             type="button"
                             className="icon-btn denied"
                             aria-label={`Deny order ${order.id}`}
-                            onClick={() => handleDeny(order.id)}
+                            onClick={() => {
+                              handleDeny(order.id);
+                              console.log("denied");
+                            }}
                           >
                             <BsXSquare className="action-icon reject" />
                           </button>

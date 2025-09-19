@@ -7,7 +7,7 @@ import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
 import DashboardPage from "./pages/DashboardPage";
-import ProductListPage from "./pages/ProductListPage";
+import ProductsListPage from "./pages/ProductListPage";
 import OrdersPage from "./pages/OrdersPage";
 import CSRPage from "./pages/CSRPage";
 import TeamLeaderPage from "./pages/TeamLeaderPage";
@@ -31,31 +31,33 @@ function ProtectedRoute({ children, allowedRoles = [], user }) {
 }
 
 function App() {
-  const [user, setUser ] = useState(null);
+  const [user, setUser] = useState(null);
 
   // Fetch user profile and role after login
   async function fetchUserProfile(userId) {
     const { data, error } = await supabase
       .from("employees")
-      .select(`
+      .select(
+        `
         id,
         email,
         full_name,
         roles (role, label)
-      `)
+      `
+      )
       .eq("id", userId)
       .single();
 
-      if (!error && data) {
-        setUser({
-          id: data.id,
-          email: data.email,
-          fullName: data.full_name,
-          role: data.roles.role,
-          roleLabel: data.roles.label,
-        });
-      }      
+    if (!error && data) {
+      setUser({
+        id: data.id,
+        email: data.email,
+        fullName: data.full_name,
+        role: data.roles.role,
+        roleLabel: data.roles.label,
+      });
     }
+  }
   useEffect(() => {
     // Check session on mount
     supabase.auth.getSession().then(({ data }) => {
@@ -65,13 +67,15 @@ function App() {
     });
 
     // Listen for auth changes
-    const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session?.user) {
-        fetchUserProfile(session.user.id);
-      } else {
-        setUser (null);
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (session?.user) {
+          fetchUserProfile(session.user.id);
+        } else {
+          setUser(null);
+        }
       }
-    });
+    );
 
     return () => {
       listener.subscription.unsubscribe();
@@ -79,88 +83,91 @@ function App() {
   }, []);
 
   return (
-      <Routes>
-        {/* Public routes */}
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/signup" element={<SignUpPage setUser ={setUser } />} />
-        <Route path="/login" element={<LoginPage setUser ={setUser } />} />
+    <Routes>
+      {/* Public routes */}
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/signup" element={<SignUpPage setUser={setUser} />} />
+      <Route path="/login" element={<LoginPage setUser={setUser} />} />
 
-        {/* Protected routes */}
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute user={user}>
-              <DashboardPage user={user} />
-            </ProtectedRoute>
-          }
-        />
+      {/* Protected routes */}
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute user={user}>
+            <DashboardPage user={user} />
+          </ProtectedRoute>
+        }
+      />
 
-        <Route
-          path="/procurement"
-          element={
-            <ProtectedRoute user={user} allowedRoles={["procurement", "admin"]}>
-              <ProcurementPage userRole={user?.role} />
-            </ProtectedRoute>
-          }
-        />
+      <Route
+        path="/procurement"
+        element={
+          <ProtectedRoute user={user} allowedRoles={["procurement", "admin"]}>
+            <ProcurementPage userRole={user?.role} />
+          </ProtectedRoute>
+        }
+      />
 
-        <Route
-          path="/orders"
-          element={
-            <ProtectedRoute user={user} allowedRoles={["teamlead", "csr", "admin"]}>
-              <OrdersPage userRole={user?.role} />
-            </ProtectedRoute>
-          }
-        />
+      <Route
+        path="/orders"
+        element={
+          <ProtectedRoute user={user}>
+            <OrdersPage user={user} />
+          </ProtectedRoute>
+        }
+      />
 
-        <Route
-          path="/warehouse"
-          element={
-            <ProtectedRoute user={user} allowedRoles={["warehouse", "admin"]}>
-              <WarehousePage userRole={user?.role} />
-            </ProtectedRoute>
-          }
-        />
+      <Route
+        path="/warehouse"
+        element={
+          <ProtectedRoute user={user} allowedRoles={["warehouse", "admin"]}>
+            <WarehousePage userRole={user?.role} />
+          </ProtectedRoute>
+        }
+      />
 
-        <Route
-          path="/accounting"
-          element={
-            <ProtectedRoute user={user} allowedRoles={["accounting", "admin"]}>
-              <AccountingPage userRole={user?.role} />
-            </ProtectedRoute>
-          }
-        />
+      <Route
+        path="/accounting"
+        element={
+          <ProtectedRoute user={user} allowedRoles={["accounting", "admin"]}>
+            <AccountingPage userRole={user?.role} />
+          </ProtectedRoute>
+        }
+      />
 
-        <Route
-          path="/csr"
-          element={
-            <ProtectedRoute user={user} allowedRoles={["csr", "admin"]}>
-              <CSRPage userRole={user?.role} />
-            </ProtectedRoute>
-          }
-        />
+      <Route
+        path="/csr"
+        element={
+          <ProtectedRoute user={user} allowedRoles={["csr", "admin"]}>
+            <CSRPage userRole={user?.role} />
+          </ProtectedRoute>
+        }
+      />
 
-        <Route
-          path="/products"
-          element={
-            <ProtectedRoute user={user} allowedRoles={["procurement", "admin"]}>
-              <ProductListPage userRole={user?.role} />
-            </ProtectedRoute>
-          }
-        />
+      <Route
+        path="/products"
+        element={
+          <ProtectedRoute user={user}>
+            <ProductsListPage user={user} />
+          </ProtectedRoute>
+        }
+      />
 
-        <Route
-          path="/teamlead"
-          element={
-            <ProtectedRoute user={user} allowedRoles={["teamlead", "admin"]}>
-              <TeamLeaderPage userRole={user?.role} />
-            </ProtectedRoute>
-          }
-        />
+      <Route
+        path="/teamlead"
+        element={
+          <ProtectedRoute user={user} allowedRoles={["teamlead", "admin"]}>
+            <TeamLeaderPage userRole={user?.role} />
+          </ProtectedRoute>
+        }
+      />
 
-        {/* Redirect unknown routes */}
-        <Route path="*" element={<Navigate to={user ? "/dashboard" : "/login"} replace />} />
-      </Routes>
+      {/* Redirect unknown routes */}
+      <Route
+        path="*"
+        element={<Navigate to={user ? "/dashboard" : "/login"} replace />}
+      />
+    </Routes>
   );
 }
 
