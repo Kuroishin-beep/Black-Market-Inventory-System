@@ -18,9 +18,6 @@ const LandingPage = () => {
         </div>
 
         <div className="landing-header__button">
-          <button className="landing-header__button--query">
-            <HiQuestionMarkCircle />
-          </button>
           <button
             className="landing-header__button--start"
             onClick={() => navigate("/signup")}
