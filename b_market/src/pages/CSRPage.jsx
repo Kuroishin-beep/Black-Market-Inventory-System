@@ -15,6 +15,8 @@ const CSRPage = () => {
   const [filteredItems, setFilteredItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [userRole, setUserRole] = useState("");
+
 
   // Form state
   const [newRequest, setNewRequest] = useState({
@@ -59,6 +61,7 @@ const CSRPage = () => {
         return;
       }
       setUser(user);
+      setUserRole("csr");
     };
     fetchUser();
   }, []);
@@ -235,14 +238,16 @@ const CSRPage = () => {
     <div className="csr-container">
       <Sidebar userRole="csr" />
       <div className="csr-content">
-        <header className="csr-header">
+              <header className="csr-header">
           <FaUserCircle className="user-pfp" />
           <div className="user-details">
-          <span className="user-name">{user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || "User"}</span>
+            <span className="user-name">
+              {user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || "User"}
+            </span>
             <span className="user-id">{user?.id?.substring(0, 8)}</span>
             <span className="user-role" style={{ fontSize: 12, color: "#666" }}>
               Role: {userRole}
-              </span>
+            </span>
           </div>
         </header>
 
