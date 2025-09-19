@@ -46,17 +46,16 @@ function App() {
       .eq("id", userId)
       .single();
 
-    if (!error && data) {
-      setUser ({
-        id: data.id,
-        email: data.email,
-        fullName: data.full_name,
-        role: data.roles.role,
-        roleLabel: data.roles.label,
-      });
+      if (!error && data) {
+        setUser({
+          id: data.id,
+          email: data.email,
+          fullName: data.full_name,
+          role: data.roles.role,
+          roleLabel: data.roles.label,
+        });
+      }      
     }
-  }
-
   useEffect(() => {
     // Check session on mount
     supabase.auth.getSession().then(({ data }) => {

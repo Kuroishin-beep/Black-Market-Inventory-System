@@ -10,7 +10,7 @@ import AccountingPage from "./pages/AccountingPage";
 import CSRPage from "./pages/CSRPage";
 import ProductListPage from "./pages/ProductListPage";
 import TeamLeaderPage from "./pages/TeamLeaderPage";
-import DashboardPage from "./pages/DashboardPage"; // Assuming you have a dashboard
+import DashboardPage from "./pages/DashboardPage"; 
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const AppRoutes = ({ user }) => {
@@ -33,7 +33,7 @@ const AppRoutes = ({ user }) => {
       <Route
         path="/procurement"
         element={
-          <ProtectedRoute user={user} allowedRoles={["procurement", "admin"]}>
+          <ProtectedRoute user={user} allowedRoles={["procurement"]}>
             <ProcurementPage userRole={user?.role} />
           </ProtectedRoute>
         }
@@ -42,7 +42,7 @@ const AppRoutes = ({ user }) => {
       <Route
         path="/orders"
         element={
-          <ProtectedRoute user={user} allowedRoles={["teamlead", "csr", "admin"]}>
+          <ProtectedRoute user={user} allowedRoles={["teamlead", "csr"]}>
             <OrdersPage />
           </ProtectedRoute>
         }
@@ -51,7 +51,7 @@ const AppRoutes = ({ user }) => {
       <Route
         path="/warehouse"
         element={
-          <ProtectedRoute user={user} allowedRoles={["warehouse", "admin"]}>
+          <ProtectedRoute user={user} allowedRoles={["warehouse"]}>
             <WarehousePage />
           </ProtectedRoute>
         }
@@ -60,7 +60,7 @@ const AppRoutes = ({ user }) => {
       <Route
         path="/accounting"
         element={
-          <ProtectedRoute user={user} allowedRoles={["accounting", "admin"]}>
+          <ProtectedRoute user={user} allowedRoles={["accounting"]}>
             <AccountingPage />
           </ProtectedRoute>
         }
@@ -69,7 +69,7 @@ const AppRoutes = ({ user }) => {
       <Route
         path="/csr"
         element={
-          <ProtectedRoute user={user} allowedRoles={["csr", "admin"]}>
+          <ProtectedRoute user={user} allowedRoles={["csr"]}>
             <CSRPage />
           </ProtectedRoute>
         }
@@ -78,7 +78,7 @@ const AppRoutes = ({ user }) => {
       <Route
         path="/products"
         element={
-          <ProtectedRoute user={user} allowedRoles={["procurement", "admin"]}>
+          <ProtectedRoute user={user} allowedRoles={["procurement"]}>
             <ProductListPage />
           </ProtectedRoute>
         }
@@ -87,7 +87,7 @@ const AppRoutes = ({ user }) => {
       <Route
         path="/teamlead"
         element={
-          <ProtectedRoute user={user} allowedRoles={["teamlead", "admin"]}>
+          <ProtectedRoute user={user} allowedRoles={["teamlead"]}>
             <TeamLeaderPage />
           </ProtectedRoute>
         }

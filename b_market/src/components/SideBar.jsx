@@ -41,7 +41,7 @@ const Sidebar = ({ userRole }) => {
           name: "Approvals",
           iconIdle: <PiHeadsetLight />,
           iconActive: <PiHeadsetFill />,
-          path: "/approvals",
+          path: "/teamlead",
         };
       case "procurement":
         return {
