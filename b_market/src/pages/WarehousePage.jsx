@@ -13,7 +13,10 @@ const WarehousePage = ({ userRole = "warehouse" }) => {
   // Fetch current user
   useEffect(() => {
     const fetchUser = async () => {
-      const { data: { user }, error } = await supabase.auth.getUser();
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
       if (error) console.error(error);
       setUser(user);
     };
@@ -26,7 +29,8 @@ const WarehousePage = ({ userRole = "warehouse" }) => {
     try {
       const { data, error } = await supabase
         .from("warehouse_logs")
-        .select(`
+        .select(
+          `
           id,
           item_id,
           qty,
@@ -39,14 +43,15 @@ const WarehousePage = ({ userRole = "warehouse" }) => {
             price,
             stock_qty
           )
-        `)
+        `
+        )
         .order("created_at", { ascending: false });
 
       if (error) throw error;
 
       // Keep only the latest log per item
       const latestLogs = {};
-      data.forEach(log => {
+      data.forEach((log) => {
         if (!latestLogs[log.item_id]) latestLogs[log.item_id] = log;
       });
 
@@ -62,9 +67,47 @@ const WarehousePage = ({ userRole = "warehouse" }) => {
     fetchProducts();
   }, []);
 
+  // Handle status change
+  const handleStatusChange = async (log, newStatus) => {
+    if (!user) return;
+
+    // Update log
+    const { error } = await supabase
+      .from("warehouse_logs")
+      .update({
+        status: newStatus,
+        employee_id: user.id, // ✅ fix: correct column
+        note: `[${new Date().toLocaleString()}] Status changed to ${newStatus}`,
+      })
+      .eq("id", log.id);
+
+    if (error) {
+      console.error("Failed to update log:", error);
+      return;
+    }
+
+    // Adjust stock in items
+    if (newStatus === "restock") {
+      await supabase
+        .from("items")
+        .update({ stock_qty: (log.items?.stock_qty || 0) + log.qty })
+        .eq("id", log.item_id);
+    } else if (newStatus === "sold") {
+      await supabase
+        .from("items")
+        .update({ stock_qty: (log.items?.stock_qty || 0) - log.qty })
+        .eq("id", log.item_id);
+    }
+
+    fetchProducts();
+  };
+
   // Filtered products
   const filteredProducts = filterStatus
-    ? products.filter(p => (p.status || "").toLowerCase() === filterStatus.toLowerCase())
+    ? products.filter(
+        (p) =>
+          (p.status || "").toLowerCase() === filterStatus.toLowerCase()
+      )
     : products;
 
   return (
@@ -74,9 +117,13 @@ const WarehousePage = ({ userRole = "warehouse" }) => {
         <header className="warehouse-header">
           <FaUserCircle className="user-pfp" />
           <div className="user-details">
-            <span className="user-name">{user?.user_metadata?.full_name || user?.email || "User"}</span>
+            <span className="user-name">
+              {user?.user_metadata?.full_name || user?.email || "User"}
+            </span>
             <span className="user-id">{user?.id?.substring(0, 8)}</span>
-            <span className="user-role" style={{ fontSize: 12, color: "#666" }}>Role: {userRole}</span>
+            <span className="user-role" style={{ fontSize: 12, color: "#666" }}>
+              Role: {userRole}
+            </span>
           </div>
         </header>
 
@@ -100,7 +147,9 @@ const WarehousePage = ({ userRole = "warehouse" }) => {
           </div>
 
           <div className="warehouse-table__main">
-            {loading ? <p>Loading...</p> :
+            {loading ? (
+              <p>Loading...</p>
+            ) : (
               <table className="warehouse-table">
                 <thead>
                   <tr>
@@ -114,21 +163,38 @@ const WarehousePage = ({ userRole = "warehouse" }) => {
                 <tbody>
                   {filteredProducts.map((log) => (
                     <tr key={log.id}>
-                      <td>{log.items?.name || "N/A"} {log.items?.model || ""}</td>
+                      <td>
+                        {log.items?.name || "N/A"} {log.items?.model || ""}
+                      </td>
                       <td>{log.item_id?.substring(0, 8) || "N/A"}</td>
                       <td>{log.items?.stock_qty ?? "N/A"}</td>
                       <td>${log.items?.price ?? "0.00"}</td>
-                      <td>{log.status || "N/A"}</td>
+                      <td>
+                        <select
+                          value={log.status || ""}
+                          onChange={(e) =>
+                            handleStatusChange(log, e.target.value)
+                          }
+                        >
+                          <option value="restock">Restock</option>
+                          <option value="sold">Sold</option>
+                          <option value="damaged">Damaged</option>
+                          <option value="returned">Returned</option>
+                          <option value="adjustment">Adjustment</option>
+                        </select>
+                      </td>
                     </tr>
                   ))}
                   {filteredProducts.length === 0 && (
                     <tr>
-                      <td colSpan="5" style={{ textAlign: "center" }}>No products found.</td>
+                      <td colSpan="5" style={{ textAlign: "center" }}>
+                        No products found.
+                      </td>
                     </tr>
                   )}
                 </tbody>
               </table>
-            }
+            )}
           </div>
         </main>
       </div>
