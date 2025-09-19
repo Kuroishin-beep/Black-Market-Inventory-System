@@ -6,7 +6,7 @@ import { supabase } from "../supabaseClient";
 
 const WarehousePage = ({ userRole = "warehouse" }) => {
   const [user, setUser] = useState(null);
-  const [products, setProducts] = useState([]);
+  const [purchases, setPurchases] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState("");
 
@@ -23,12 +23,12 @@ const WarehousePage = ({ userRole = "warehouse" }) => {
     fetchUser();
   }, []);
 
-  // Fetch products with latest log
-  const fetchProducts = async () => {
+  // Fetch purchases from purchases table
+  const fetchPurchases = async () => {
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from("warehouse_logs")
+        .from("purchases")
         .select(
           `
           id,
@@ -48,67 +48,24 @@ const WarehousePage = ({ userRole = "warehouse" }) => {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-
-      // Keep only the latest log per item
-      const latestLogs = {};
-      data.forEach((log) => {
-        if (!latestLogs[log.item_id]) latestLogs[log.item_id] = log;
-      });
-
-      setProducts(Object.values(latestLogs));
+      setPurchases(data || []);
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching purchases:", err);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchProducts();
+    fetchPurchases();
   }, []);
 
-  // Handle status change
-  const handleStatusChange = async (log, newStatus) => {
-    if (!user) return;
-
-    // Update log
-    const { error } = await supabase
-      .from("warehouse_logs")
-      .update({
-        status: newStatus,
-        employee_id: user.id, // ✅ fix: correct column
-        note: `[${new Date().toLocaleString()}] Status changed to ${newStatus}`,
-      })
-      .eq("id", log.id);
-
-    if (error) {
-      console.error("Failed to update log:", error);
-      return;
-    }
-
-    // Adjust stock in items
-    if (newStatus === "restock") {
-      await supabase
-        .from("items")
-        .update({ stock_qty: (log.items?.stock_qty || 0) + log.qty })
-        .eq("id", log.item_id);
-    } else if (newStatus === "sold") {
-      await supabase
-        .from("items")
-        .update({ stock_qty: (log.items?.stock_qty || 0) - log.qty })
-        .eq("id", log.item_id);
-    }
-
-    fetchProducts();
-  };
-
-  // Filtered products
-  const filteredProducts = filterStatus
-    ? products.filter(
-        (p) =>
-          (p.status || "").toLowerCase() === filterStatus.toLowerCase()
+  // Filtered purchases
+  const filteredPurchases = filterStatus
+    ? purchases.filter(
+        (p) => (p.status || "").toLowerCase() === filterStatus.toLowerCase()
       )
-    : products;
+    : purchases;
 
   return (
     <div className="warehouse-container">
@@ -129,7 +86,7 @@ const WarehousePage = ({ userRole = "warehouse" }) => {
 
         <main className="warehouse-main">
           <div className="warehouse-main__header">
-            <h1 className="warehouse-title">Products</h1>
+            <h1 className="warehouse-title">Purchases</h1>
             <div className="warehouse-main__header--buttons">
               <select
                 className="warehouse-main__filter"
@@ -137,11 +94,9 @@ const WarehousePage = ({ userRole = "warehouse" }) => {
                 onChange={(e) => setFilterStatus(e.target.value)}
               >
                 <option value="">All</option>
-                <option value="restock">Restock</option>
-                <option value="sold">Sold</option>
-                <option value="damaged">Damaged</option>
-                <option value="returned">Returned</option>
-                <option value="adjustment">Adjustment</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="received">Received</option>
               </select>
             </div>
           </div>
@@ -154,41 +109,35 @@ const WarehousePage = ({ userRole = "warehouse" }) => {
                 <thead>
                   <tr>
                     <th>Item Information</th>
-                    <th>Product ID</th>
-                    <th>Stock</th>
+                    <th>Purchase ID</th>
+                    <th>Quantity</th>
                     <th>Price</th>
                     <th>Status</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredProducts.map((log) => (
-                    <tr key={log.id}>
+                  {filteredPurchases.map((purchase) => (
+                    <tr key={purchase.id}>
                       <td>
-                        {log.items?.name || "N/A"} {log.items?.model || ""}
+                        {purchase.items?.name || "N/A"}{" "}
+                        {purchase.items?.model || ""}
                       </td>
-                      <td>{log.item_id?.substring(0, 8) || "N/A"}</td>
-                      <td>{log.items?.stock_qty ?? "N/A"}</td>
-                      <td>${log.items?.price ?? "0.00"}</td>
-                      <td>
-                        <select
-                          value={log.status || ""}
-                          onChange={(e) =>
-                            handleStatusChange(log, e.target.value)
-                          }
-                        >
-                          <option value="restock">Restock</option>
-                          <option value="sold">Sold</option>
-                          <option value="damaged">Damaged</option>
-                          <option value="returned">Returned</option>
-                          <option value="adjustment">Adjustment</option>
-                        </select>
+                      <td>{purchase.id?.substring(0, 8) || "N/A"}</td>
+                      <td>{purchase.qty ?? "N/A"}</td>
+                      <td>${purchase.items?.price ?? "0.00"}</td>
+                      {/* className + inline style to guarantee left alignment */}
+                      <td
+                        className="status-cell"
+                        style={{ textAlign: "left" }}
+                      >
+                        {purchase.status || "N/A"}
                       </td>
                     </tr>
                   ))}
-                  {filteredProducts.length === 0 && (
+                  {filteredPurchases.length === 0 && (
                     <tr>
                       <td colSpan="5" style={{ textAlign: "center" }}>
-                        No products found.
+                        No purchases found.
                       </td>
                     </tr>
                   )}
