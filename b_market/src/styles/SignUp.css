@@ -190,13 +190,16 @@
 .signup-card__form--name,
 .signup-card__form--password {
   width: 100%;
-  padding: 10px 40px;
-  padding-right: 100px;
+  padding: 10px 40px 10px 40px;
   border: 1px solid #ccc;
   border-radius: 5px;
   outline: none;
   font-size: 14px;
   font-family: var(--font-body);
+}
+
+.signup-card__form--password {
+  padding-right: 45px; /* enough for the eye toggle */
 }
 
 .signup-card__position {

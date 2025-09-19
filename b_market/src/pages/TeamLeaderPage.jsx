@@ -7,11 +7,67 @@ import { CiFilter } from "react-icons/ci";
 import { BsCheckSquare, BsXSquare } from "react-icons/bs";
 import { supabase } from "../supabaseClient";
 
-const TeamLeaderPage = ({ userRole = "teamlead" }) => {
-  const [user, setUser] = useState(null); // employee record, not raw auth
+const TeamLeaderPage = () => {
+  const [user, setUser] = useState(null);
+  const [userRole, setUserRole] = useState(null);
   const [orderRequests, setOrderRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // --- Fetch authenticated user and their role ---
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      try {
+        const {
+          data: { user },
+          error,
+        } = await supabase.auth.getUser();
+
+        if (error || !user) {
+          setError("User not authenticated.");
+          setLoadingUserRole(false);
+          return;
+        }
+
+        setUser(user);
+
+        // Fetch employee from employees table
+        const { data: employeeData, error: empError } = await supabase
+          .from("employees")
+          .select(
+            `
+            id,
+            full_name,
+            email,
+            role_id,
+            roles:roles(id, role, label)
+          `
+          )
+          .eq("auth_user_id", user.id) // ✅ safer if your employees table uses auth_user_id
+          .single();
+
+        if (empError || !employeeData) {
+          const metadataRole = user.user_metadata?.role;
+          if (!metadataRole) {
+            console.warn(
+              "Employee record not found and no metadata role found. Falling back to default 'warehouse'."
+            );
+          }
+          setUserRole(metadataRole || "warehouse");
+        } else {
+          setUserRole(employeeData.roles.role);
+        }
+      } catch (err) {
+        console.error("Error fetching employee role:", err);
+        const metadataRole = user?.user_metadata?.role;
+        setUserRole(metadataRole || "warehouse");
+      } finally {
+        setLoadingUserRole(false);
+      }
+    };
+
+    fetchUserRole();
+  }, []);
 
   // Fetch CSR Orders (pending approval, teamlead_id is NULL)
   const fetchOrders = async () => {
@@ -107,7 +163,7 @@ const TeamLeaderPage = ({ userRole = "teamlead" }) => {
         .from("sales")
         .update({
           status: "approved",
-          stage: "sales",
+          stage: "csr",
           teamlead_id: user.id, // employee.id
         })
         .eq("id", id);
@@ -145,14 +201,11 @@ const TeamLeaderPage = ({ userRole = "teamlead" }) => {
     <div className="team-container">
       <Sidebar userRole={userRole} />
       <div className="team-content">
-        <header className="dashboard-header">
+        <header className="team-header">
           <FaUserCircle className="user-pfp" />
           <div className="user-details">
             <span className="user-name">
-              {user?.user_metadata?.full_name ||
-                user?.user_metadata?.name ||
-                user?.email ||
-                "User"}
+              {user?.full_name || user?.email || "User"}
             </span>
 
             <span className="user-role" style={{ fontSize: 12, color: "#666" }}>

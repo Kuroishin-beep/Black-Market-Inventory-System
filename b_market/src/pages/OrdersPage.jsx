@@ -91,6 +91,7 @@ const OrdersPage = () => {
         qty,
         total,
         status,
+        payment_status,
         created_at,
         customers (company_name, contact_person),
         distributors (name),
@@ -100,6 +101,7 @@ const OrdersPage = () => {
         accounting:employees!sales_accounting_id_fkey (full_name, email)
       `
       )
+      .eq("status", "approved")
       .order("created_at", { ascending: false })
       .range(from, to);
 
@@ -130,14 +132,25 @@ const OrdersPage = () => {
 
   const getPaymentStatusClass = (status) => {
     switch (status.toLowerCase()) {
-      case "completed":
+      case "paid":
         return "paid";
+      case "pending":
+        return "pending";
+      case "overdue":
+        return "overdue";
+      default:
+        return "pending";
+    }
+  };
+
+  const getStatusClass = (status) => {
+    switch (status.toLowerCase()) {
       case "pending":
         return "pending";
       case "approved":
         return "approved";
-      case "invoiced":
-        return "overdue";
+      case "denied":
+        return "denied";
       default:
         return "pending";
     }
@@ -161,7 +174,7 @@ const OrdersPage = () => {
       </div>
     );
   }
-
+  const capitalize = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
   return (
     <div className="orders-container">
       <Sidebar userRole={userRole} />
@@ -215,7 +228,7 @@ const OrdersPage = () => {
                   <th>CSR</th>
                   <th>Team Lead</th>
                   <th>Accounting</th>
-                  <th className="last-column">Status</th>
+                  <th className="last-column">Payment Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -244,10 +257,10 @@ const OrdersPage = () => {
                       <td className="last-column">
                         <span
                           className={`badge ${getPaymentStatusClass(
-                            order.status
+                            order.payment_status
                           )}`}
                         >
-                          {order.status}
+                          {capitalize(order.payment_status)}
                         </span>
                         {/* <select
                           value={order.status}

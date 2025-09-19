@@ -158,7 +158,7 @@ td:last-child {
   background-color: #ffebce;
 }
 
-.badge.overdue {
+.badge.denied {
   color: #b91c1c;
   background-color: #ffe1de;
 }
