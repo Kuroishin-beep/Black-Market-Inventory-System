@@ -37,20 +37,20 @@ const LoginPage = ({ setUser }) => {
     e.preventDefault();
     setErrorMsg(null);
     setLoading(true);
-
+  
     const { email, password } = formData;
-
+  
     if (!email || !password) {
       setErrorMsg("Please enter both email and password.");
       setLoading(false);
       return;
     }
-
+  
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
-
+  
     if (error) {
       if (error.message && error.message.toLowerCase().includes("email not confirmed")) {
         setErrorMsg("Your email is not confirmed. Please check your inbox for a confirmation email. If you did not receive it, click below to resend.");
@@ -61,29 +61,31 @@ const LoginPage = ({ setUser }) => {
       setLoading(false);
       return;
     }
-
+  
     if (data.user && data.user.confirmed_at === null) {
       setErrorMsg("Your email is not confirmed. Please check your inbox for a confirmation email. If you did not receive it, click below to resend.");
       setLoading(false);
       return;
     }
-
+  
+    // ✅ Fetch role by email instead of UUID
     const { data: empData, error: empError } = await supabase
       .from("employees")
       .select("role_id")
-      .eq("id", data.user.id)
+      .eq("email", data.user.email)
       .single();
-
+  
     if (empError) {
       setErrorMsg("Failed to fetch user role.");
       setLoading(false);
       return;
     }
-
+  
     setUser({ id: data.user.id, email: data.user.email, role: empData.role_id });
     setLoading(false);
     navigate("/dashboard");
   };
+  
 
   const handleResendConfirmation = async () => {
     setErrorMsg(null);
