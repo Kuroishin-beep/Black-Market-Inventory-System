@@ -224,6 +224,10 @@ td:last-child {
   color: #cc5b66; /* red text */
 }
 
+.warehouse-table td.status-cell {
+  text-align: left !important;
+}
+
 /* .status-badge {
   display: inline-block;
   text-align: right;
