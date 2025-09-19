@@ -3,7 +3,7 @@ import Sidebar from "../components/SideBar";
 import "../styles/CSR.css";
 import "../styles/Shared.css";
 import { FaUserCircle } from "react-icons/fa";
-import { BsCheckSquare, BsXSquare, BsPencil, BsTrash } from "react-icons/bs";
+import { BsPencil, BsTrash } from "react-icons/bs";
 import { supabase } from "../supabaseClient";
 
 const CSRPage = () => {
@@ -11,25 +11,48 @@ const CSRPage = () => {
   const [orderRequests, setOrderRequests] = useState([]);
   const [distributors, setDistributors] = useState([]);
   const [items, setItems] = useState([]);
+  const [customers, setCustomers] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   // Form state
   const [newRequest, setNewRequest] = useState({
+    customer_id: "",
     distributor_id: "",
     item_id: "",
     qty: "",
   });
 
-  // For editing
+  // For editing order requests
   const [editRequestId, setEditRequestId] = useState(null);
   const [editQty, setEditQty] = useState("");
 
+  // For editing
+  useEffect(() => {
+    const fetchCustomers = async () => {
+      const { data, error } = await supabase
+        .from("customers")
+        .select("id, company_name, contact_person, email")
+        .order("company_name", { ascending: true });
+
+      if (error) {
+        console.error("Error fetching customers:", error.message);
+      } else {
+        console.log("Fetched customers:", data); // 🟢 Debug log
+        setCustomers(data || []);
+      }
+    };
+
+    fetchCustomers();
+  }, []);
   // Fetch authenticated user
   useEffect(() => {
     const fetchUser = async () => {
-      const { data: { user }, error } = await supabase.auth.getUser();
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
       if (error || !user) {
         setError("User not authenticated.");
         setLoading(false);
@@ -40,56 +63,73 @@ const CSRPage = () => {
     fetchUser();
   }, []);
 
-  // Fetch distributors and items
+  // Fetch distributors, items, customers
   useEffect(() => {
     const fetchData = async () => {
-      const { data: distributorsData, error: distError } = await supabase
-        .from("distributors")
-        .select("*")
-        .order("name");
+      try {
+        // Fetch distributors
+        const { data: distributorsData, error: distError } = await supabase
+          .from("distributors")
+          .select("id, name")
+          .order("name");
 
-      if (distError) console.error(distError);
-      else setDistributors(distributorsData || []);
+        if (distError) throw distError;
+        setDistributors(distributorsData || []);
 
-      const { data: itemsData, error: itemsError } = await supabase
-        .from("items")
-        .select("*")
-        .order("name");
+        // Fetch items
+        const { data: itemsData, error: itemsError } = await supabase
+          .from("items")
+          .select("id, brand, name, model, stock_qty, price")
+          .order("name");
 
-      if (itemsError) console.error(itemsError);
-      else setItems(itemsData || []);
+        if (itemsError) throw itemsError;
+        setItems(itemsData || []);
+
+        // Fetch customers
+        const { data: customersData, error: custError } = await supabase
+          .from("customers")
+          .select("id, company_name, contact_person, email")
+          .order("company_name");
+
+        if (custError) throw custError;
+        console.log("✅ Customers fetched:", customersData); // 👈 Debug log
+        setCustomers(customersData || []);
+      } catch (err) {
+        console.error("❌ Error fetching data:", err.message);
+      }
     };
+
     fetchData();
   }, []);
 
-  // Filter products by distributor
+  // ✅ Show all items
   useEffect(() => {
-    if (newRequest.distributor_id) {
-      setFilteredItems(items.filter(i => i.distributor_id === newRequest.distributor_id));
-    } else {
-      setFilteredItems([]);
-    }
-  }, [newRequest.distributor_id, items]);
+    setFilteredItems(items.length > 0 ? items : []);
+  }, [items]);
 
-  // Fetch order requests
+  // Fetch order requests with joins
   const fetchOrderRequests = async () => {
     if (!user) return;
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from("purchases")
-        .select(`
+        .from("sales")
+        .select(
+          `
           id,
           distributor_id,
+          customer_id,
           item_id,
           qty,
           total,
           status,
           created_at,
-          items: item_id (name, model, price, stock_qty),
-          distributors: distributor_id (name)
-        `)
-        .eq("created_by", user.id)
+          items: item_id (name, model, price),
+          distributors: distributor_id (name),
+          customers: customer_id (company_name, contact_person)
+        `
+        )
+        .eq("csr_id", user.id)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -108,50 +148,44 @@ const CSRPage = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNewRequest(prev => ({ ...prev, [name]: value }));
+    setNewRequest((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleCreateNewRequest = async (e) => {
     e.preventDefault();
     setError(null);
-    const { distributor_id, item_id, qty } = newRequest;
-    if (!distributor_id || !item_id || !qty) {
+
+    const { distributor_id, item_id, qty, customer_id } = newRequest;
+    if (!distributor_id || !item_id || !qty || !customer_id) {
       setError("Please fill all fields.");
       return;
     }
 
-    const item = items.find(i => i.id === item_id);
+    const item = items.find((i) => i.id === item_id);
     if (!item) {
       setError("Selected product not found.");
-      return;
-    }
-
-    if (qty > item.stock_qty) {
-      setError(`Cannot order more than ${item.stock_qty} in stock.`);
       return;
     }
 
     const total = parseFloat(item.price) * parseInt(qty, 10);
 
     try {
-      const { error } = await supabase.from("purchases").insert([
+      const { error } = await supabase.from("sales").insert([
         {
           distributor_id,
+          customer_id,
           item_id,
           qty: parseInt(qty, 10),
-          total,
+          total: parseFloat(total).toFixed(2),
           status: "pending",
-          created_by: user.id,
-          created_at: new Date().toISOString()
+          csr_id: user.id,
+          stage: "csr",
         },
       ]);
 
       if (error) throw error;
 
-      // Reduce stock
-      await supabase.from("items").update({ stock_qty: item.stock_qty - parseInt(qty, 10) }).eq("id", item.id);
-
-      setNewRequest({ distributor_id: "", item_id: "", qty: "" });
+      setNewRequest({ customer_id: "", distributor_id: "", item_id: "", qty: "" });
       fetchOrderRequests();
     } catch (err) {
       console.error(err);
@@ -163,9 +197,7 @@ const CSRPage = () => {
   const handleDeleteRequest = async (order) => {
     if (!window.confirm("Are you sure you want to delete this order?")) return;
     try {
-      await supabase.from("purchases").delete().eq("id", order.id);
-      // Restore stock
-      await supabase.from("items").update({ stock_qty: order.items.stock_qty + order.qty }).eq("id", order.item_id);
+      await supabase.from("sales").delete().eq("id", order.id);
       fetchOrderRequests();
     } catch (err) {
       console.error(err);
@@ -180,15 +212,15 @@ const CSRPage = () => {
   };
 
   const handleSaveEdit = async (order) => {
-    const diff = editQty - order.qty;
-    if (diff > order.items.stock_qty) {
-      setError(`Cannot increase by ${diff}, only ${order.items.stock_qty} available in stock.`);
-      return;
-    }
-
     try {
-      await supabase.from("purchases").update({ qty: parseInt(editQty, 10), total: parseFloat(editQty * order.items.price) }).eq("id", order.id);
-      await supabase.from("items").update({ stock_qty: order.items.stock_qty - diff }).eq("id", order.item_id);
+      await supabase
+        .from("sales")
+        .update({
+          qty: parseInt(editQty, 10),
+          total: parseFloat(editQty * order.items.price),
+        })
+        .eq("id", order.id);
+
       setEditRequestId(null);
       fetchOrderRequests();
     } catch (err) {
@@ -197,7 +229,7 @@ const CSRPage = () => {
     }
   };
 
-  const capitalize = (s) => s ? s.charAt(0).toUpperCase() + s.slice(1) : "";
+  const capitalize = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : "");
 
   return (
     <div className="csr-container">
@@ -206,8 +238,11 @@ const CSRPage = () => {
         <header className="csr-header">
           <FaUserCircle className="user-pfp" />
           <div className="user-details">
-            <span className="user-name">{user?.email || "User"}</span>
+          <span className="user-name">{user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || "User"}</span>
             <span className="user-id">{user?.id?.substring(0, 8)}</span>
+            <span className="user-role" style={{ fontSize: 12, color: "#666" }}>
+              Role: {userRole}
+              </span>
           </div>
         </header>
 
@@ -216,30 +251,85 @@ const CSRPage = () => {
 
           <div className="csr-card">
             <form onSubmit={handleCreateNewRequest}>
+              {/* Customer select */}
               <div className="form-group">
-                <label>Supplier</label>
-                <select className="form-select" name="distributor_id" value={newRequest.distributor_id} onChange={handleInputChange} required>
-                  <option value="">Select Supplier</option>
-                  {distributors.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
+                <label>Customer</label>
+                <select
+                  className="form-select"
+                  name="customer_id"
+                  value={newRequest.customer_id}
+                  onChange={handleInputChange}
+                  required
+                >
+                  <option value="">Select Customer</option>
+                  {customers.length === 0 ? (
+                    <option disabled>No customers found</option>
+                  ) : (
+                    customers.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.company_name} ({c.contact_person})
+                      </option>
+                    ))
+                  )}
                 </select>
               </div>
 
+              {/* Distributor select */}
+              <div className="form-group">
+                <label>Supplier</label>
+                <select
+                  className="form-select"
+                  name="distributor_id"
+                  value={newRequest.distributor_id}
+                  onChange={handleInputChange}
+                  required
+                >
+                  <option value="">Select Supplier</option>
+                  {distributors.map((d) => (
+                    <option key={d.id} value={d.id}>
+                      {d.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Item + Qty */}
               <div className="form-row">
                 <div className="form-group product-group">
                   <label>Product/s</label>
-                  <select className="form-select" name="item_id" value={newRequest.item_id} onChange={handleInputChange} required>
+                  <select
+                    className="form-select"
+                    name="item_id"
+                    value={newRequest.item_id}
+                    onChange={handleInputChange}
+                    required
+                  >
                     <option value="">Select Product</option>
-                    {filteredItems.map(i => <option key={i.id} value={i.id}>{i.brand} {i.name} ({i.model}) - Stock: {i.stock_qty}</option>)}
+                    {filteredItems.map((i) => (
+                      <option key={i.id} value={i.id}>
+                        {i.brand} {i.name} ({i.model}) - Stock: {i.stock_qty}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
                 <div className="form-group qty-group">
                   <label>Qty</label>
-                  <input type="number" className="form-input" name="qty" value={newRequest.qty} onChange={handleInputChange} min="1" required />
+                  <input
+                    type="number"
+                    className="form-input"
+                    name="qty"
+                    value={newRequest.qty}
+                    onChange={handleInputChange}
+                    min="1"
+                    required
+                  />
                 </div>
               </div>
 
-              <button type="submit" className="add-btn">+ Add Product</button>
+              <button type="submit" className="add-btn">
+                + Add Product
+              </button>
             </form>
           </div>
 
@@ -247,49 +337,74 @@ const CSRPage = () => {
 
           <h2 style={{ marginTop: "30px" }}>Order Requests</h2>
 
-          {loading ? <p>Loading...</p> :
-            orderRequests.length === 0 ? <p>No orders yet.</p> :
-              <table className="products-table">
-                <thead>
-                  <tr>
-                    <th>Item Info</th>
-                    <th>Supplier</th>
-                    <th>Qty</th>
-                    <th>Total</th>
-                    <th>Status</th>
-                    <th>Actions</th>
+          {loading ? (
+            <p>Loading...</p>
+          ) : orderRequests.length === 0 ? (
+            <p>No orders yet.</p>
+          ) : (
+            <table className="products-table">
+              <thead>
+                <tr>
+                  <th>Customer</th>
+                  <th>Item Info</th>
+                  <th>Supplier</th>
+                  <th>Qty</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {orderRequests.map((order) => (
+                  <tr key={order.id}>
+                    <td>
+                      {order.customers?.company_name} (
+                      {order.customers?.contact_person})
+                    </td>
+                    <td>
+                      {order.items.name} {order.items.model}
+                    </td>
+                    <td>{order.distributors.name}</td>
+                    <td>
+                      {editRequestId === order.id ? (
+                        <input
+                          type="number"
+                          value={editQty}
+                          min="1"
+                          onChange={(e) => setEditQty(e.target.value)}
+                        />
+                      ) : (
+                        order.qty
+                      )}
+                    </td>
+                    <td>${order.total.toFixed(2)}</td>
+                    <td>{capitalize(order.status)}</td>
+                    <td>
+                      {editRequestId === order.id ? (
+                        <>
+                          <button onClick={() => handleSaveEdit(order)}>
+                            Save
+                          </button>
+                          <button onClick={() => setEditRequestId(null)}>
+                            Cancel
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button onClick={() => handleEditOrder(order)}>
+                            <BsPencil />
+                          </button>
+                          <button onClick={() => handleDeleteRequest(order)}>
+                            <BsTrash />
+                          </button>
+                        </>
+                      )}
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {orderRequests.map(order => (
-                    <tr key={order.id}>
-                      <td>{order.items.name} {order.items.model}</td>
-                      <td>{order.distributors.name}</td>
-                      <td>
-                        {editRequestId === order.id ? (
-                          <input type="number" value={editQty} min="1" onChange={(e) => setEditQty(e.target.value)} />
-                        ) : order.qty}
-                      </td>
-                      <td>${order.total.toFixed(2)}</td>
-                      <td>{capitalize(order.status)}</td>
-                      <td>
-                        {editRequestId === order.id ? (
-                          <>
-                            <button onClick={() => handleSaveEdit(order)}>Save</button>
-                            <button onClick={() => setEditRequestId(null)}>Cancel</button>
-                          </>
-                        ) : (
-                          <>
-                            <button onClick={() => handleEditOrder(order)}><BsPencil /></button>
-                            <button onClick={() => handleDeleteRequest(order)}><BsTrash /></button>
-                          </>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-          }
+                ))}
+              </tbody>
+            </table>
+          )}
         </main>
       </div>
     </div>
