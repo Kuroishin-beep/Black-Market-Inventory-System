@@ -22,6 +22,14 @@
   );
 }
 
+.loader-wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
 .dashboard-main {
   flex: 1;
   padding: 20px;

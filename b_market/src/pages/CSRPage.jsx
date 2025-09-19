@@ -17,7 +17,6 @@ const CSRPage = () => {
   const [error, setError] = useState(null);
   const [userRole, setUserRole] = useState("");
 
-
   // Form state
   const [newRequest, setNewRequest] = useState({
     customer_id: "",
@@ -188,7 +187,12 @@ const CSRPage = () => {
 
       if (error) throw error;
 
-      setNewRequest({ customer_id: "", distributor_id: "", item_id: "", qty: "" });
+      setNewRequest({
+        customer_id: "",
+        distributor_id: "",
+        item_id: "",
+        qty: "",
+      });
       fetchOrderRequests();
     } catch (err) {
       console.error(err);
@@ -238,13 +242,15 @@ const CSRPage = () => {
     <div className="csr-container">
       <Sidebar userRole="csr" />
       <div className="csr-content">
-              <header className="csr-header">
+        <header className="csr-header">
           <FaUserCircle className="user-pfp" />
           <div className="user-details">
             <span className="user-name">
-              {user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || "User"}
+              {user?.user_metadata?.full_name ||
+                user?.user_metadata?.name ||
+                user?.email ||
+                "User"}
             </span>
-            <span className="user-id">{user?.id?.substring(0, 8)}</span>
             <span className="user-role" style={{ fontSize: 12, color: "#666" }}>
               Role: {userRole}
             </span>
@@ -338,77 +344,97 @@ const CSRPage = () => {
             </form>
           </div>
 
-          {error && <p style={{ color: "red", textAlign: "center" }}>{error}</p>}
+          {error && (
+            <p style={{ color: "red", textAlign: "center" }}>{error}</p>
+          )}
 
-          <h2 style={{ marginTop: "30px" }}>Order Requests</h2>
+          <h1 className="csr-title" style={{ marginTop: "30px" }}>
+            Order Requests
+          </h1>
 
           {loading ? (
             <p>Loading...</p>
           ) : orderRequests.length === 0 ? (
             <p>No orders yet.</p>
           ) : (
-            <table className="products-table">
-              <thead>
-                <tr>
-                  <th>Customer</th>
-                  <th>Item Info</th>
-                  <th>Supplier</th>
-                  <th>Qty</th>
-                  <th>Total</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orderRequests.map((order) => (
-                  <tr key={order.id}>
-                    <td>
-                      {order.customers?.company_name} (
-                      {order.customers?.contact_person})
-                    </td>
-                    <td>
-                      {order.items.name} {order.items.model}
-                    </td>
-                    <td>{order.distributors.name}</td>
-                    <td>
-                      {editRequestId === order.id ? (
-                        <input
-                          type="number"
-                          value={editQty}
-                          min="1"
-                          onChange={(e) => setEditQty(e.target.value)}
-                        />
-                      ) : (
-                        order.qty
-                      )}
-                    </td>
-                    <td>${order.total.toFixed(2)}</td>
-                    <td>{capitalize(order.status)}</td>
-                    <td>
-                      {editRequestId === order.id ? (
-                        <>
-                          <button onClick={() => handleSaveEdit(order)}>
-                            Save
-                          </button>
-                          <button onClick={() => setEditRequestId(null)}>
-                            Cancel
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          <button onClick={() => handleEditOrder(order)}>
-                            <BsPencil />
-                          </button>
-                          <button onClick={() => handleDeleteRequest(order)}>
-                            <BsTrash />
-                          </button>
-                        </>
-                      )}
-                    </td>
+            <div className="csr-table__main">
+              <table className="csr-table">
+                <thead>
+                  <tr>
+                    <th>Customer</th>
+                    <th>Item Info</th>
+                    <th>Supplier</th>
+                    <th>Qty</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th className="last-column">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {orderRequests.map((order) => (
+                    <tr key={order.id}>
+                      <td>
+                        {order.customers?.company_name} (
+                        {order.customers?.contact_person})
+                      </td>
+                      <td>
+                        {order.items.name} {order.items.model}
+                      </td>
+                      <td>{order.distributors.name}</td>
+                      <td>
+                        {editRequestId === order.id ? (
+                          <input
+                            type="number"
+                            value={editQty}
+                            min="1"
+                            onChange={(e) => setEditQty(e.target.value)}
+                          />
+                        ) : (
+                          order.qty
+                        )}
+                      </td>
+                      <td>${order.total.toFixed(2)}</td>
+                      <td className={`status-badge ${order.status}`}>
+                        {capitalize(order.status)}
+                      </td>
+                      <td>
+                        {editRequestId === order.id ? (
+                          <>
+                            <button
+                              className="action-btn save-btn"
+                              onClick={() => handleSaveEdit(order)}
+                            >
+                              Save
+                            </button>
+                            <button
+                              className="action-btn cancel-btn"
+                              onClick={() => setEditRequestId(null)}
+                            >
+                              Cancel
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              className="icon-btn"
+                              onClick={() => handleEditOrder(order)}
+                            >
+                              <BsPencil />
+                            </button>
+                            <button
+                              className="icon-btn"
+                              onClick={() => handleDeleteRequest(order)}
+                            >
+                              <BsTrash />
+                            </button>
+                          </>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </main>
       </div>

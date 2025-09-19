@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Sidebar from "../components/SideBar";
 import "../styles/Dashboard.css";
 import "../styles/Shared.css";
+import YellowAnimatedLoader from "../components/Loading";
 import { FaUserCircle } from "react-icons/fa";
 import { BsFillBarChartFill } from "react-icons/bs";
 import { supabase } from "../supabaseClient";
@@ -165,7 +166,9 @@ const DashboardPage = () => {
       <div className="dashboard-container">
         <Sidebar userRole={userRole} />
         <div className="dashboard-content">
-          <p>Loading dashboard...</p>
+          <div className="loader-wrapper">
+            <YellowAnimatedLoader />
+          </div>
         </div>
       </div>
     );
