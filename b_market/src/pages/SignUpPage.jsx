@@ -4,6 +4,7 @@ import { supabase } from "../supabaseClient"; // Import your supabase client
 import "../styles/SignUp.css";
 import "../styles/Shared.css";
 import logo from "../assets/logo.png";
+import { HiQuestionMarkCircle } from "react-icons/hi2";
 import { FaUser } from "react-icons/fa6";
 import { MdLock } from "react-icons/md";
 import { IoEye } from "react-icons/io5";
