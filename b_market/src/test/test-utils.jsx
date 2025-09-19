@@ -38,13 +38,15 @@ export const createMockAuthState = (user = null) => {
   const mockSupabase = global.mockSupabase
   
   if (user) {
-    mockSupabase.auth.getSession.mockResolvedValue(
-      mockSupabaseResponses.session(user)
-    )
+    mockSupabase.auth.getSession.mockResolvedValue({
+      data: { session: { user } },
+      error: null
+    })
   } else {
-    mockSupabase.auth.getSession.mockResolvedValue(
-      mockSupabaseResponses.noSession()
-    )
+    mockSupabase.auth.getSession.mockResolvedValue({
+      data: { session: null },
+      error: null
+    })
   }
 }
 

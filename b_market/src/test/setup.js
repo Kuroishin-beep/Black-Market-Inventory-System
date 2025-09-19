@@ -4,19 +4,36 @@ import { vi } from 'vitest'
 // Mock Supabase client
 const mockSupabase = {
   auth: {
-    getSession: vi.fn(),
-    signInWithPassword: vi.fn(),
-    signUp: vi.fn(),
-    signOut: vi.fn(),
+    getSession: vi.fn().mockResolvedValue({
+      data: { session: null },
+      error: null
+    }),
+    signInWithPassword: vi.fn().mockResolvedValue({
+      data: { user: null },
+      error: null
+    }),
+    signUp: vi.fn().mockResolvedValue({
+      data: { user: null },
+      error: null
+    }),
+    signOut: vi.fn().mockResolvedValue({
+      error: null
+    }),
     onAuthStateChange: vi.fn(() => ({
       data: { subscription: { unsubscribe: vi.fn() } }
     })),
-    resend: vi.fn()
+    resend: vi.fn().mockResolvedValue({
+      data: {},
+      error: null
+    })
   },
   from: vi.fn(() => ({
     select: vi.fn().mockReturnThis(),
     eq: vi.fn().mockReturnThis(),
-    single: vi.fn(),
+    single: vi.fn().mockResolvedValue({
+      data: null,
+      error: null
+    }),
     insert: vi.fn().mockReturnThis(),
     update: vi.fn().mockReturnThis(),
     delete: vi.fn().mockReturnThis()
