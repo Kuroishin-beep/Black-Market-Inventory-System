@@ -1,119 +1,58 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "../components/SideBar";
 import "../styles/Accounting.css";
 import { LuSend } from "react-icons/lu";
 import { FaUserCircle } from "react-icons/fa";
 import { CiFilter } from "react-icons/ci";
+import { supabase } from "../supabaseClient"; // ✅ Supabase client
 
 const AccountingPage = ({ userRole = "accounting" }) => {
-  const [billings, setBillings] = useState([
-    {
-      orderId: "#12345",
-      customer: "ABC Retail",
-      price: "$599.75",
-      status: "Pending",
-      invoiceSent: false,
-      dueDate: "2025-09-01",
-    },
-    {
-      orderId: "#67890",
-      customer: "DEF Merchandise",
-      price: "$599.75",
-      status: "Paid",
-      invoiceSent: true,
-      dueDate: "2025-09-02",
-    },
-    {
-      orderId: "#12346",
-      customer: "GHI Retail",
-      price: "$599.75",
-      status: "Pending",
-      invoiceSent: false,
-      dueDate: "2025-09-03",
-    },
-    {
-      orderId: "#67891",
-      customer: "JKL Store",
-      price: "$599.75",
-      status: "Paid",
-      invoiceSent: true,
-      dueDate: "2025-09-04",
-    },
-    {
-      orderId: "#12347",
-      customer: "MNO Merchandise",
-      price: "$599.75",
-      status: "Pending",
-      invoiceSent: false,
-      dueDate: "2025-09-05",
-    },
-    {
-      orderId: "#67892",
-      customer: "PQR Retail",
-      price: "$599.75",
-      status: "Paid",
-      invoiceSent: true,
-      dueDate: "2025-09-06",
-    },
-    {
-      orderId: "#12348",
-      customer: "STU Merchandise",
-      price: "$599.75",
-      status: "Overdue",
-      invoiceSent: true,
-      dueDate: "2025-09-07",
-    },
-    {
-      orderId: "#67893",
-      customer: "VWX Store",
-      price: "$599.75",
-      status: "Paid",
-      invoiceSent: true,
-      dueDate: "2025-09-08",
-    },
-    {
-      orderId: "#12349",
-      customer: "YZA Store",
-      price: "$599.75",
-      status: "Pending",
-      invoiceSent: false,
-      dueDate: "2025-09-09",
-    },
-    {
-      orderId: "#67894",
-      customer: "BCD Retail",
-      price: "$599.75",
-      status: "Overdue",
-      invoiceSent: true,
-      dueDate: "2025-09-10",
-    },
-  ]);
+  const [billings, setBillings] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const [currentPage, setCurrentPage] = useState(3);
+  // ✅ Fetch billings from Supabase
+  useEffect(() => {
+    const fetchBillings = async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("sales")
+        .select(
+          "id, customer_id, item_id, qty, total, status, user_id, created_at, distributor_id, accounting_id"
+        );
 
-  const handleSendInvoice = (index) => {
-    const updatedBillings = [...billings];
-    updatedBillings[index].invoiceSent = true;
-    setBillings(updatedBillings);
-    console.log(`Invoice sent for order ${updatedBillings[index].orderId}`);
-  };
+      if (error) {
+        console.error("Error fetching billings:", error.message);
+      } else {
+        setBillings(data);
+      }
+      setLoading(false);
+    };
 
-  const handleMarkAsPaid = (index) => {
-    const updatedBillings = [...billings];
-    updatedBillings[index].status = "Paid";
-    setBillings(updatedBillings);
-    console.log(`Order ${updatedBillings[index].orderId} marked as Paid`);
-  };
+    fetchBillings();
+  }, []);
 
-  const handleMarkAsOverdue = (index) => {
-    const updatedBillings = [...billings];
-    updatedBillings[index].status = "Overdue";
-    setBillings(updatedBillings);
-    console.log(`Order ${updatedBillings[index].orderId} marked as Overdue`);
+  // ✅ Send Invoice (update accounting_id)
+  const handleSendInvoice = async (saleId) => {
+    const { data, error } = await supabase
+      .from("sales")
+      .update({ accounting_id: "INV-" + saleId }) // Generate invoice ID
+      .eq("id", saleId)
+      .select();
+
+    if (error) {
+      console.error("Error sending invoice:", error.message);
+    } else {
+      console.log("Invoice sent:", data);
+      setBillings((prev) =>
+        prev.map((bill) =>
+          bill.id === saleId ? { ...bill, accounting_id: "INV-" + saleId } : bill
+        )
+      );
+    }
   };
 
   const getStatusClass = (status) => {
-    switch (status.toLowerCase()) {
+    switch (status?.toLowerCase()) {
       case "paid":
         return "paid";
       case "pending":
@@ -128,6 +67,7 @@ const AccountingPage = ({ userRole = "accounting" }) => {
   return (
     <div className="accounting-container">
       <Sidebar userRole={userRole} />
+
       <div className="accounting-content">
         <header className="accounting-header">
           <FaUserCircle className="user-pfp" />
@@ -151,53 +91,57 @@ const AccountingPage = ({ userRole = "accounting" }) => {
             <table className="accounting-table">
               <thead>
                 <tr>
-                  <th>Order ID</th>
+                  <th>Sale ID</th>
                   <th>Customer</th>
-                  <th>Price</th>
-                  <th>Payment Due</th>
+                  <th>Item</th>
+                  <th>Qty</th>
+                  <th>Total</th>
                   <th>Status</th>
+                  <th>Created</th>
                   <th className="last-column">Action</th>
                 </tr>
               </thead>
 
               <tbody>
-                {billings.map((bill) => (
-                  <tr key={bill.id}>
-                    <td>{bill.orderId}</td>
-                    <td>{bill.customer}</td>
-                    <td>{bill.price}</td>
-                    <td>{bill.dueDate}</td>
-                    <td>
-                      <span className={`badge ${getStatusClass(bill.status)}`}>
-                        {bill.status}
-                      </span>
-                    </td>
-
-                    <td>
-                      <button className="action-btn">
-                        <LuSend />
-                      </button>
-                    </td>
+                {loading ? (
+                  <tr>
+                    <td colSpan="8">Loading...</td>
                   </tr>
-                ))}
+                ) : billings.length > 0 ? (
+                  billings.map((bill) => (
+                    <tr key={bill.id}>
+                      <td>{bill.id}</td>
+                      <td>{bill.customer_id}</td>
+                      <td>{bill.item_id}</td>
+                      <td>{bill.qty}</td>
+                      <td>${bill.total}</td>
+                      <td>
+                        <span className={`badge ${getStatusClass(bill.status)}`}>
+                          {bill.status || "Pending"}
+                        </span>
+                      </td>
+                      <td>{new Date(bill.created_at).toLocaleDateString()}</td>
+                      <td>
+                        {bill.accounting_id ? (
+                          <span className="badge paid">Invoice Sent</span>
+                        ) : (
+                          <button
+                            className="action-btn"
+                            onClick={() => handleSendInvoice(bill.id)}
+                          >
+                            <LuSend />
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="8">No billing records found</td>
+                  </tr>
+                )}
               </tbody>
             </table>
-
-            <div className="pagination">
-              <button className="pagination-btn">
-                <span>←</span> Previous
-              </button>
-
-              <div className="page-numbers">
-                <span className="page-number">01</span>
-                <span className="page-number">02</span>
-                <span className="page-number">03</span>
-              </div>
-
-              <button className="pagination-btn">
-                Next <span>→</span>
-              </button>
-            </div>
           </div>
         </main>
       </div>
