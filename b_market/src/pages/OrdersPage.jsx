@@ -1,25 +1,24 @@
-// FileName: /OrdersPage.jsx
 import React, { useState, useEffect } from "react";
 import Sidebar from "../components/SideBar";
 import "../styles/Orders.css";
 import "../styles/Shared.css";
 import { FaUserCircle } from "react-icons/fa";
 import { CiFilter } from "react-icons/ci";
-import { supabase } from "../supabaseClient"; // Import your Supabase client
+import { supabase } from "../supabaseClient";
 
 const OrdersPage = () => {
-  const [userRole, setUserRole] = useState("teamlead"); // This should ideally come from user context
-  const [salesOrders, setSalesOrders] = useState([]); // Renamed from orders to salesOrders
+  const [userRole, setUserRole] = useState("teamlead"); 
+  const [salesOrders, setSalesOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1); // Start from page 1
-  const itemsPerPage = 10; // Number of items per page
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchSalesOrders();
-  }, [currentPage]); // Refetch when page changes
+  }, [currentPage]);
 
-  // 1. READ: Fetch sales orders from Supabase
+  // Fetch sales orders with all relationships
   const fetchSalesOrders = async () => {
     setLoading(true);
     setError(null);
@@ -27,7 +26,6 @@ const OrdersPage = () => {
     const from = (currentPage - 1) * itemsPerPage;
     const to = from + itemsPerPage - 1;
 
-    // Fetch sales and join with items and customers for display
     const { data, error } = await supabase
       .from("sales")
       .select(`
@@ -36,8 +34,12 @@ const OrdersPage = () => {
         total,
         status,
         created_at,
-        items (name, model),
-        customers (company_name, contact_person)
+        customers (company_name, contact_person),
+        distributors (name),
+        items (name, model, price),
+        csr:employees!sales_csr_id_fkey (full_name, email),
+        teamlead:employees!sales_teamlead_id_fkey (full_name, email),
+        accounting:employees!sales_accounting_id_fkey (full_name, email)
       `)
       .order("created_at", { ascending: false })
       .range(from, to);
@@ -46,12 +48,12 @@ const OrdersPage = () => {
       console.error("Error fetching sales orders:", error);
       setError("Failed to fetch sales orders.");
     } else {
-      setSalesOrders(data);
+      setSalesOrders(data || []);
     }
     setLoading(false);
   };
 
-  // 2. UPDATE: Handle payment status change (simulated for now, actual payment processing is complex)
+  // Update payment/order status
   const handlePaymentStatusChange = async (orderId, newStatus) => {
     setError(null);
     const { error } = await supabase
@@ -63,17 +65,19 @@ const OrdersPage = () => {
       console.error("Error updating sales order status:", error);
       setError("Failed to update order status.");
     } else {
-      fetchSalesOrders(); // Refresh the list
+      fetchSalesOrders();
     }
   };
 
   const getPaymentStatusClass = (status) => {
     switch (status.toLowerCase()) {
-      case "paid":
+      case "completed":
         return "paid";
       case "pending":
         return "pending";
-      case "overdue":
+      case "approved":
+        return "approved";
+      case "invoiced":
         return "overdue";
       default:
         return "pending";
@@ -85,7 +89,6 @@ const OrdersPage = () => {
   };
 
   const handleNextPage = () => {
-    // In a real app, you'd check if there are more pages from a count query
     setCurrentPage((prev) => prev + 1);
   };
 
@@ -136,26 +139,39 @@ const OrdersPage = () => {
                   <th>Order ID</th>
                   <th>Date</th>
                   <th>Customer</th>
-                  <th>Item Info</th>
+                  <th>Distributor</th>
+                  <th>Item</th>
                   <th>Qty</th>
                   <th>Total</th>
+                  <th>CSR</th>
+                  <th>Team Lead</th>
+                  <th>Accounting</th>
                   <th className="last-column">Status</th>
                 </tr>
               </thead>
               <tbody>
                 {salesOrders.length === 0 ? (
                   <tr>
-                    <td colSpan="7" style={{ textAlign: "center" }}>No sales orders found.</td>
+                    <td colSpan="11" style={{ textAlign: "center" }}>
+                      No sales orders found.
+                    </td>
                   </tr>
                 ) : (
                   salesOrders.map((order) => (
                     <tr key={order.id}>
-                      <td>#{order.id.substring(0, 8)}</td> {/* Shorten UUID for display */}
+                      <td>#{order.id.substring(0, 8)}</td>
                       <td>{new Date(order.created_at).toLocaleDateString()}</td>
                       <td>{order.customers?.company_name || "N/A"}</td>
-                      <td>{order.items?.name || "N/A"} ({order.items?.model || "N/A"})</td>
+                      <td>{order.distributors?.name || "N/A"}</td>
+                      <td>
+                        {order.items?.name || "N/A"} (
+                        {order.items?.model || "N/A"})
+                      </td>
                       <td>{order.qty}</td>
                       <td>${parseFloat(order.total).toFixed(2)}</td>
+                      <td>{order.csr?.full_name || "N/A"}</td>
+                      <td>{order.teamlead?.full_name || "N/A"}</td>
+                      <td>{order.accounting?.full_name || "N/A"}</td>
                       <td className="last-column">
                         <span
                           className={`badge ${getPaymentStatusClass(
@@ -164,17 +180,21 @@ const OrdersPage = () => {
                         >
                           {order.status}
                         </span>
-                        {/* Example of inline status update (can be a dropdown) */}
                         <select
                           value={order.status}
-                          onChange={(e) => handlePaymentStatusChange(order.id, e.target.value)}
-                          style={{ marginLeft: '10px', padding: '5px', borderRadius: '4px' }}
+                          onChange={(e) =>
+                            handlePaymentStatusChange(order.id, e.target.value)
+                          }
+                          style={{
+                            marginLeft: "10px",
+                            padding: "5px",
+                            borderRadius: "4px",
+                          }}
                         >
-                          <option value="Pending">Pending</option>
-                          <option value="Paid">Paid</option>
-                          <option value="Overdue">Overdue</option>
-                          <option value="Shipped">Shipped</option>
-                          <option value="Delivered">Delivered</option>
+                          <option value="pending">Pending</option>
+                          <option value="approved">Approved</option>
+                          <option value="invoiced">Invoiced</option>
+                          <option value="completed">Completed</option>
                         </select>
                       </td>
                     </tr>
@@ -185,13 +205,18 @@ const OrdersPage = () => {
 
             {/* Pagination */}
             <div className="pagination">
-              <button className="pagination-btn" onClick={handlePreviousPage} disabled={currentPage === 1}>
+              <button
+                className="pagination-btn"
+                onClick={handlePreviousPage}
+                disabled={currentPage === 1}
+              >
                 <span>←</span> Previous
               </button>
 
               <div className="page-numbers">
-                <span className="page-number">{String(currentPage).padStart(2, "0")}</span>
-                {/* You might want to show more page numbers or total pages */}
+                <span className="page-number">
+                  {String(currentPage).padStart(2, "0")}
+                </span>
               </div>
 
               <button className="pagination-btn" onClick={handleNextPage}>
