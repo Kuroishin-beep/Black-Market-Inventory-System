@@ -139,6 +139,7 @@ const ProcurementPage = () => {
                 <div className="form-group qty-group">
                   <label>Quantity</label>
                   <input
+                    placeholder="e.g. 25"
                     type="number"
                     className="form-input"
                     value={form.qty}

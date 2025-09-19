@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Tooltip from "@mui/material/Tooltip";
 import "../styles/Sidebar.css";
 import logo from "../assets/logo.png";
+import { supabase } from "../supabaseClient";
 
 // specific roles icons
 import { PiHeadsetFill, PiHeadsetLight } from "react-icons/pi";
@@ -93,6 +94,16 @@ const Sidebar = ({ userRole }) => {
     ...(roleButton ? [roleButton] : []),
   ];
 
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error("Logout error:", error.message);
+    }
+    // Clear any React state too
+    setUser(null);
+    navigate("/"); // go back to landing page
+  };
+
   return (
     <aside className="sidebar">
       <img className="landing-header__app--logo" src={logo} alt="logo" />
@@ -122,7 +133,7 @@ const Sidebar = ({ userRole }) => {
           <div
             className="logout"
             onClick={() => {
-              navigate("/");
+              handleLogout();
             }}
           >
             <span className="nav-item logout">

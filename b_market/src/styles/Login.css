@@ -189,13 +189,17 @@
 .login-card__form--email,
 .login-card__form--password {
   width: 100%;
-  padding: 10px 40px;
-  padding-right: 100px;
+  padding: 10px 40px 10px 40px; /* top/right/bottom/left */
   border: 1px solid #ccc;
   border-radius: 5px;
   outline: none;
   font-size: 14px;
   font-family: var(--font-body);
+}
+
+/* Only for password input, add extra room on right for the eye button */
+.login-card__form--password {
+  padding-right: 45px; /* enough for the eye toggle */
 }
 
 .login-card__password-toggle {

@@ -327,6 +327,7 @@ const CSRPage = () => {
                 <div className="form-group qty-group">
                   <label>Qty</label>
                   <input
+                    placeholder="e.g. 25"
                     type="number"
                     className="form-input"
                     name="qty"
