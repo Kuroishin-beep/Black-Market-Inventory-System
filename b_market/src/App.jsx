@@ -37,27 +37,42 @@ function App() {
   async function fetchUserProfile(userId) {
     const { data, error } = await supabase
       .from("employees")
-      .select(
-        `
+      .select(`
         id,
         email,
         full_name,
-        roles (role, label)
-      `
-      )
+        role_id,
+        roles (
+          id,
+          role,
+          label
+        )
+      `)
       .eq("id", userId)
-      .single();
-
-    if (!error && data) {
-      setUser({
-        id: data.id,
-        email: data.email,
-        fullName: data.full_name,
-        role: data.roles.role,
-        roleLabel: data.roles.label,
-      });
+      .maybeSingle(); 
+  
+    if (error) {
+      console.error("Error fetching user profile:", error.message);
+      return;
     }
+  
+    if (!data) {
+      console.warn("No employee record found for this userId:", userId);
+      return; 
+    }
+  
+    console.log("Fetched user profile:", data);
+  
+    setUser({
+      id: data.id,
+      email: data.email,
+      fullName: data.full_name,
+      role: data.roles?.role?.toLowerCase(),
+      roleLabel: data.roles?.label,
+    });
   }
+  
+  
   useEffect(() => {
     // Check session on mount
     supabase.auth.getSession().then(({ data }) => {
@@ -130,7 +145,7 @@ function App() {
         path="/accounting"
         element={
           <ProtectedRoute user={user} allowedRoles={["accounting", "admin"]}>
-            <AccountingPage userRole={user?.role} />
+            <AccountingPage user={user} />
           </ProtectedRoute>
         }
       />
