@@ -10,7 +10,7 @@ const AccountingPage = ({ user }) => {
   const userRole = user?.role || "accounting";
   const [billings, setBillings] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState("all"); // ✅ New filter state
+  const [filter, setFilter] = useState("all"); 
 
   useEffect(() => {
     fetchBillings();
