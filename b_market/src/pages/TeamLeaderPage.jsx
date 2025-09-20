@@ -81,6 +81,7 @@ const TeamLeaderPage = () => {
           qty,
           total,
           status,
+          payment_status,
           stage,
           created_at,
           customers:customer_id (company_name),
@@ -164,6 +165,7 @@ const TeamLeaderPage = () => {
         .update({
           status: "approved",
           stage: "csr",
+          payment_status: "pending",
           teamlead_id: user.id, // employee.id
         })
         .eq("id", id);
@@ -184,6 +186,7 @@ const TeamLeaderPage = () => {
         .update({
           status: "denied",
           stage: "csr",
+          payment_status: "pending",
           teamlead_id: user.id,
         })
         .eq("id", id);
